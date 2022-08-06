@@ -1,3 +1,8 @@
+/* --------------------------------- IMPORTS --------------------------------- */
+
+const fs = require("fs");
+const P = require("pino");
+
 const {
   default: makeWASocket,
   DisconnectReason,
@@ -9,8 +14,7 @@ const {
   downloadContentFromMessage,
 } = require("@adiwajshing/baileys");
 
-const fs = require("fs");
-const P = require("pino");
+/* --------------------------------- MAIN METHOD --------------------------------- */
 
 async function connectToWhatsApp() {
   const { state, saveCreds } = await useMultiFileAuthState("auth_info_baileys");
@@ -20,6 +24,7 @@ async function connectToWhatsApp() {
     auth: state,
     logger: P({ level: "silent" }),
   });
+
   sock.ev.on("creds.update", saveCreds);
   sock.ev.on("connection.update", async (update) => {
     const { connection, lastDisconnect } = update;
@@ -42,5 +47,7 @@ async function connectToWhatsApp() {
     }
   });
 }
+
+/* --------------------------------- PROGRAM STARTS HERE --------------------------------- */
 
 connectToWhatsApp();
