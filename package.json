@@ -5,7 +5,9 @@
   "author": "ni3mumbaikar",
   "license": "MIT",
   "dependencies": {
-    "@adiwajshing/baileys": "^4.3.0",
+    "@adiwajshing/baileys": "4.2.0",
+    "@adiwajshing/keyed-db": "^0.2.4",
+    "@types/node": "^18.6.4",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "pino": "^8.4.0",
@@ -13,6 +15,7 @@
     "wa-sticker-formatter": "^4.3.2"
   },
   "scripts": {
-    "start": "node index.ts"
+    "tsc": "tsc",
+    "start": "node index.js"
   }
 }

@@ -1,5 +1,9 @@
 auth_info_multi.json
+auth_info_baileys
 baileys_store_multi.json
+
+yarn.lock
+package-lock.json
 
 # Logs
 logs
