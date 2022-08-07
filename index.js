@@ -2,6 +2,7 @@
 
 const fs = require("fs");
 const P = require("pino");
+const commandsHandler = require("./utils/commandsHandler");
 
 const {
   default: makeWASocket,
@@ -45,6 +46,12 @@ async function connectToWhatsApp() {
         await connectToWhatsApp();
       }
     }
+  });
+
+  sock.ev.on("messages.upsert", async (m) => {
+    const msg = JSON.parse(JSON.stringify(m)).messages[0];
+    if (!msg.message) return; //when demote, add, remove, etc happen then msg.message is not there
+    commandsHandler.handler(msg);
   });
 }
 
