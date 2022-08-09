@@ -6,7 +6,8 @@ const commandsList = require("./commandList");
 
 let PREFIX = process.env.PREFIX;
 var commands = commandsList.commandsGenerator();
-console.log(commands);
+
+console.log('--------------------------------- BOT SOCRATES INITIALIZED ---------------------------------');
 
 /* --------------------------------- MESSAGE HANDLER METHOD --------------------------------- */
 
@@ -16,13 +17,13 @@ module.exports.handler = function handleMessage(sock, msg) {
 
   // checks for in-reply messages and enforces group only policy
   if (msg.message) {
-
+    // console.log(msg);
     if (
       msg.message.extendedTextMessage &&
       msg.message.extendedTextMessage.text &&
       msg.message.extendedTextMessage.text.startsWith(PREFIX)
     ) {
-      switchMaster(sock, msg.message.extendedTextMessage.text);
+      switchMaster(sock, msg, msg.message.extendedTextMessage.text);
     }
 
     // checks for simple conversations in group and personal
@@ -32,7 +33,6 @@ module.exports.handler = function handleMessage(sock, msg) {
     ) {
       switchMaster(sock, msg, msg.message.conversation);
     }
-
   }
 };
 
@@ -67,5 +67,5 @@ async function switchMaster(sock, msg, command) {
 
 async function commnadNotFound(sock, msg) {
   let id = msg.key.remoteJid;
-  let sentMsg = await sock.sendMessage(id, { text: "🤦‍♂️How many time I have to tell you this dear child ! \nPlease check /help commands", }, { quoted: msg });
+  let sentMsg = await sock.sendMessage(id, { text: "🤦‍♂️ Dear child, how many times do I have to tell you this ? \n\nPlease check /help commands", }, { quoted: msg });
 }

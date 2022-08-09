@@ -5,6 +5,8 @@ baileys_store_multi.json
 yarn.lock
 package-lock.json
 
+assets/stickers
+
 # Logs
 logs
 *.log

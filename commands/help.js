@@ -1,9 +1,11 @@
 var helpDescription =
   "🖐️🤩 Hello Bot Socrates here \n\n" +
-  "Following are the commands that you can use for now !\n\n" +
-  "*/alive* : To check I am dead or alive 😨\n\n" +
-  "*/help* : To get this menu 📝\n" +
-  "Available Options : _admin_ ";
+  "Following are the commands that you can use for now !" +
+  "\n\n*/alive* : To check I am dead or alive 😨" +
+  "\n\n*/help* : To get this menu 📝\n" +
+  "Available Options : _admin_ " +
+  "\n\n*/sticker* : Create stickers from any Image/GIF/Video 🖼️\n" +
+  "Available Options : _default_, _crop_, _full_ ";
 
 
 module.exports.reply = async function (sock, msg) {
