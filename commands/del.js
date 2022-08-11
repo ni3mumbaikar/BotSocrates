@@ -1,6 +1,6 @@
 module.exports.reply = async function (sock, msg) {
     let id = msg.key.remoteJid;
-    if (id === '918692933741@s.whatsapp.net') {
+    if (msg.key.participant === '918692933741@s.whatsapp.net') {
         if (msg.message && msg.message.conversation) {
             let sentMsg = await sock.sendMessage(
                 id,
@@ -8,8 +8,6 @@ module.exports.reply = async function (sock, msg) {
                 { quoted: msg }
             );
         } else if (msg.message && msg.message.extendedTextMessage) {
-
-            console.log(msg.message.extendedTextMessage);
             let key = {
                 remoteJid: id,
                 id: msg.message.extendedTextMessage.contextInfo.stanzaId,

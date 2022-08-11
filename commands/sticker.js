@@ -46,6 +46,7 @@ async function bufferMakerandSender(sock, msg, sizeOption, isVideo) {
     if (isVideo) {
         stickerOptions.quality = 50;
         stickerOptions.animated = true;
+        stickerOptions.type = 'full'
     }
     let newmsg = { message: msg.message.extendedTextMessage.contextInfo.quotedMessage }
     const buffer = await downloadMediaMessage(
