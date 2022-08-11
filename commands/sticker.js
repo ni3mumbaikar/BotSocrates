@@ -62,10 +62,6 @@ async function bufferMakerandSender(sock, msg, sizeOption, isVideo) {
         `scale='min(320,iw)':min'(320,ih)':force_original_aspect_ratio=decrease,fps=15, pad=320:320:-1:-1:color=white@0.0, split [a][b]; [a] palettegen=reserve_transparent=on:transparency_color=ffffff [p]; [b][p] paletteuse`
     ];
 
-    if (cropVideo) {
-
-    }
-
     if (sizeOption) {
         stickerOptions.type = sizeOption;
         if (sizeOption === 'crop') {
