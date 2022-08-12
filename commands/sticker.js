@@ -86,11 +86,7 @@ async function bufferMakerandSender(sock, msg, sizeOption, isVideo) {
             ];
         }
     }
-    if (isVideo) {
-        stickerOptions.quality = 50;
-        stickerOptions.animated = true;
-        stickerOptions.type = 'full'
-    }
+
     let newmsg = { message: msg.message.extendedTextMessage.contextInfo.quotedMessage }
     const buffer = await downloadMediaMessage(
         newmsg,
@@ -101,51 +97,68 @@ async function bufferMakerandSender(sock, msg, sizeOption, isVideo) {
             reuploadRequest: sock.updateMediaMessage
         })
 
-    const media = getRandomName(".mp4");
-    const stream = await downloadContentFromMessage(msg.message.extendedTextMessage.contextInfo.quotedMessage.videoMessage, "video");
+    if (isVideo) {
+        stickerOptions.quality = 50;
+        stickerOptions.animated = true;
+        stickerOptions.type = 'full'
 
-    const media1 = getRandomName(".mp4");
-    await writeFile(media1, buffer);
-    const ran = getRandomName(".webp");
+        const media = getRandomName(".mp4");
+        const stream = await downloadContentFromMessage(msg.message.extendedTextMessage.contextInfo.quotedMessage.videoMessage, "video");
 
-    ffmpeg(`./${media1}`)
-        .setStartTime("00:00:00")
-        .setDuration(vlen.toString())
-        .output(media)
-        .on("end", function (err) {
-            if (err) {
+        const media1 = getRandomName(".mp4");
+        await writeFile(media1, buffer);
+        const ran = getRandomName(".webp");
+
+        ffmpeg(`./${media1}`)
+            .setStartTime("00:00:00")
+            .setDuration(vlen.toString())
+            .output(media)
+            .on("end", function (err) {
+                if (err) {
+                    fs.unlinkSync(media);
+                    fs.unlinkSync(ran);
+                    fs.unlinkSync(media1);
+
+                    return;
+                }
+                ffmpeg(`./${media}`)
+                    .inputFormat(media.split(".")[1])
+                    .on("error", function (err) {
+                        fs.unlinkSync(media);
+                        fs.unlinkSync(media1);
+                        fs.unlinkSync(ran);
+                        return;
+                    })
+                    .on("end", async function () {
+                        const sticker = new Sticker(ran, { quality: 50 }).setAuthor('BotSocrates').setPack('Socrates');
+                        let sentMsg = await sock.sendMessage(id, { sticker: await sticker.build() });
+                        fs.unlinkSync(media);
+                        fs.unlinkSync(media1);
+                        fs.unlinkSync(ran);
+                        return;
+                    })
+                    .addOutputOptions(outputOptions)
+                    .toFormat("webp")
+                    .save(ran);
+            })
+            .on("error", function (err) {
+                reject(inofr5);
                 fs.unlinkSync(media);
                 fs.unlinkSync(ran);
                 fs.unlinkSync(media1);
 
                 return;
-            }
-            ffmpeg(`./${media}`)
-                .inputFormat(media.split(".")[1])
-                .on("error", function (err) {
-                    fs.unlinkSync(media);
-                    fs.unlinkSync(media1);
-                    fs.unlinkSync(ran);
-                    return;
-                })
-                .on("end", async function () {
-                    const sticker = new Sticker(ran, { quality: 50 }).setAuthor('BotSocrates').setPack('Socrates');
-                    let sentMsg = await sock.sendMessage(id, { sticker: await sticker.build() });
-                    fs.unlinkSync(media);
-                    fs.unlinkSync(media1);
-                    fs.unlinkSync(ran);
-                })
-                .addOutputOptions(outputOptions)
-                .toFormat("webp")
-                .save(ran);
-        })
-        .on("error", function (err) {
-            reject(inofr5);
-            fs.unlinkSync(media);
-            fs.unlinkSync(ran);
-            fs.unlinkSync(media1);
+            })
+            .run();
 
-            return;
-        })
-        .run();
+    }
+
+    const stickerbuffer = await createSticker(buffer, stickerOptions).catch((err) => {
+        async () => {
+            console.log(err);
+            let sentMsg = await sock.sendMessage(id, { text: 'Something broke !' }, { quoted: msg });
+        }
+    });
+    let sentMsg = await sock.sendMessage(id, { sticker: await stickerbuffer }, { quoted: msg });
+
 }
