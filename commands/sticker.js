@@ -151,14 +151,13 @@ async function bufferMakerandSender(sock, msg, sizeOption, isVideo) {
             })
             .run();
 
+    } else {
+        const stickerbuffer = await createSticker(buffer, stickerOptions).catch((err) => {
+            async () => {
+                console.log(err);
+                let sentMsg = await sock.sendMessage(id, { text: 'Something broke !' }, { quoted: msg });
+            }
+        });
+        let sentMsg = await sock.sendMessage(id, { sticker: await stickerbuffer }, { quoted: msg });
     }
-
-    const stickerbuffer = await createSticker(buffer, stickerOptions).catch((err) => {
-        async () => {
-            console.log(err);
-            let sentMsg = await sock.sendMessage(id, { text: 'Something broke !' }, { quoted: msg });
-        }
-    });
-    let sentMsg = await sock.sendMessage(id, { sticker: await stickerbuffer }, { quoted: msg });
-
 }
