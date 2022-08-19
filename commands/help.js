@@ -3,9 +3,14 @@ var helpDescription =
   "Following are the commands that you can use for now !" +
   "\n\n*/alive* : To check I am dead or alive 😨" +
   "\n\n*/help* : To get this menu 📝\n" +
-  "Available Options : _admin_ " +
+  "Available Options : _admin_ \n" +
+  "Alias : _h_" +
   "\n\n*/sticker* : Create stickers from any Image/GIF/Video 🖼️\n" +
-  "Available Options : _default_, _crop_, _full_ ";
+  "Available Options : _default_, _crop_, _full_ " +
+  "\n\n*/insta* : Download any public Image/Video from instagram ⬇️\n" +
+  "Parameter : _Instagram content link_\n" +
+  "Alias : _igd_"
+  ;
 
 
 module.exports.reply = async function (sock, msg) {
