@@ -9,7 +9,10 @@ var helpDescription =
   "Available Options : _default_, _crop_, _full_ " +
   "\n\n*/insta* : Download any public Image/Video from instagram ⬇️\n" +
   "Parameter : _Instagram content link_\n" +
-  "Alias : _igd_"
+  "Alias : _igd_" +
+  "\n\n*/instadp* : Download profile picture from instagram by username or profile link 📷\n" +
+  "Parameter : _Instagram username or profile link_\n" +
+  "Alias : _idp_"
   ;
 
 
