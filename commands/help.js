@@ -12,7 +12,9 @@ var helpDescription =
   "Alias : _igd_" +
   "\n\n*/instadp* : Download profile picture from instagram by username or profile link 📷\n" +
   "Parameter : _Instagram username or profile link_\n" +
-  "Alias : _idp_"
+  "Alias : _idp_" +
+  "\n\n*/ytv* : Download youtube short videos 🎞️\n" +
+  "Parameter : _youtube shorts video link_\n"
   ;
 
 
