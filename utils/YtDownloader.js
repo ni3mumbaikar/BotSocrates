@@ -17,7 +17,9 @@ module.exports = async function download(sock, msg, url, chatId) {
     // const filepath = path.join(__dirname, 'Media', 'Video', fileName);
     const path = Path.resolve(savePath, fileName);
 
-    if (url.toString().includes("youtube.com/shorts")) {
+
+    url = urlParse(url);
+    if (url.includes("youtube.com/shorts")) {
         // considering the video to be youtube short
         const urlParser = UrlParser(
             url,
@@ -64,4 +66,14 @@ module.exports = async function download(sock, msg, url, chatId) {
 
 };
 
+function urlParse(ytv_url) {
+    ytv_url = ytv_url.toString();
+    console.log('here');
+    if (ytv_url.includes("youtube.com/shorts")) {
+        return ytv_url;
+    } else if (ytv_url.startsWith("https://youtu.be/")) {
+        console.log("https://youtube.com/shorts/" + ytv_url.split('/')[3]);
+        return "https://youtube.com/shorts/" + ytv_url.split('/')[3];
+    }
+}
 
