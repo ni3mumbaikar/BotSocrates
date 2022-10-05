@@ -12,9 +12,7 @@ module.exports.reply = async function (sock, msg) {
 
 module.exports.replyForCommandWithOption = async function (sock, msg, option) {
     let id = msg.key.remoteJid;
-    ytd(sock, msg, option, id).then((filepath) => {
-        // console.log(filepath);
-    }).catch(err => async function (err) {
+    ytd(sock, msg, option, id).catch(err => async function (err) {
         console.error('Error : ' + err);
         let sentMsg = await sock.sendMessage(
             id,
