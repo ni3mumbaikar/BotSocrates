@@ -41,30 +41,39 @@ module.exports = async function download(sock, msg, url, chatId) {
         console.log(ID);
         const video = await youtube.getDetails(ID);
         // Last element from the available qualities meta data of the video. Last element i.e. len-1 which is the maximum available quality for the specific video
-        console.log(video.metadata.available_qualities[video.metadata.available_qualities.length - 1]);
-        options['quality'] = video.metadata.available_qualities[video.metadata.available_qualities.length - 1];
+        console.log(video.metadata.length_seconds);
 
-        // TODO : CHECK Vid length Do not download or send if it is above threshold
+        // IF the video is not greater than 5 Minutes
+        if (video.metadata.length_seconds < 300) {
 
-        stream = await youtube.download(ID, options);
+            options['quality'] = video.metadata.available_qualities[video.metadata.available_qualities.length - 1];
 
-        const writer = fs.createWriteStream(path);
-        await stream.pipe(writer);
+            // TODO : CHECK Vid length Do not download or send if it is above threshold
 
-        return new Promise((resolve, reject) => {
-            writer.on("finish", async () => {
-                await sock.sendMessage(
-                    chatId, {
-                    video: await fs.readFileSync(path),
-                    caption: "",
-                    gifPlayback: false,
-                }, { quoted: msg }
-                );
-                fs.unlinkSync(path);
+            stream = await youtube.download(ID, options);
 
+            const writer = fs.createWriteStream(path);
+            await stream.pipe(writer);
+
+            return new Promise((resolve, reject) => {
+                writer.on("finish", async () => {
+                    await sock.sendMessage(
+                        chatId, {
+                        video: await fs.readFileSync(path),
+                        caption: "",
+                        gifPlayback: false,
+                    }, { quoted: msg }
+                    );
+                    fs.unlinkSync(path);
+
+                });
+                writer.on("error", reject);
             });
-            writer.on("error", reject);
-        });
+        } else {
+            await sock.sendMessage(
+                chatId, { text: " ⚠️ Make sure video length is less than 10 minutes." }, { quoted: msg }
+            );
+        }
     } else {
         await sock.sendMessage(
             chatId, { text: " ⚠️ Please check your youtube shorts url." }, { quoted: msg }
