@@ -19,7 +19,16 @@ module.exports = async function download(sock, msg, url, chatId) {
 
 
     url = urlParse(url);
-    if (url.includes("youtube.com/shorts")) {
+    if (url != 418) {
+        youtube = await new Innertube({ gl: 'IN' });
+
+        options = {
+            format: 'mp4',
+            quality: '720p',
+            type: 'videoandaudio',
+        };
+
+
         // considering the video to be youtube short
         const urlParser = UrlParser(
             url,
@@ -29,40 +38,38 @@ module.exports = async function download(sock, msg, url, chatId) {
         ID = urlParser.namedParams["id"];
 
         // To get yt video information
-        // const video = await youtube.getDetails('-vK09JQs6os');
-        // console.log(video);
+        console.log(ID);
+        const video = await youtube.getDetails(ID);
+        // Last element from the available qualities meta data of the video. Last element i.e. len-1 which is the maximum available quality for the specific video
+        console.log(video.metadata.available_qualities[video.metadata.available_qualities.length - 1]);
+        options['quality'] = video.metadata.available_qualities[video.metadata.available_qualities.length - 1];
 
-    } else {
-    }
+        // TODO : CHECK Vid length Do not download or send if it is above threshold
 
-    youtube = await new Innertube({ gl: 'IN' });
+        stream = await youtube.download(ID, options);
 
-    // TODO : CHECK MAX QUALITY
-    options = {
-        format: 'mp4',
-        quality: '720p',
-        type: 'videoandaudio',
-    };
+        const writer = fs.createWriteStream(path);
+        await stream.pipe(writer);
 
-    stream = await youtube.download(ID, options);
+        return new Promise((resolve, reject) => {
+            writer.on("finish", async () => {
+                await sock.sendMessage(
+                    chatId, {
+                    video: await fs.readFileSync(path),
+                    caption: "",
+                    gifPlayback: false,
+                }, { quoted: msg }
+                );
+                fs.unlinkSync(path);
 
-    const writer = fs.createWriteStream(path);
-    await stream.pipe(writer);
-
-    return new Promise((resolve, reject) => {
-        writer.on("finish", async () => {
-            await sock.sendMessage(
-                chatId, {
-                video: await fs.readFileSync(path),
-                caption: "",
-                gifPlayback: false,
-            }, { quoted: msg }
-            );
-            fs.unlinkSync(path);
-
+            });
+            writer.on("error", reject);
         });
-        writer.on("error", reject);
-    });
+    } else {
+        await sock.sendMessage(
+            chatId, { text: " ⚠️ Please check your youtube shorts url." }, { quoted: msg }
+        );
+    }
 
 };
 
@@ -74,6 +81,8 @@ function urlParse(ytv_url) {
     } else if (ytv_url.startsWith("https://youtu.be/")) {
         console.log("https://youtube.com/shorts/" + ytv_url.split('/')[3]);
         return "https://youtube.com/shorts/" + ytv_url.split('/')[3];
+    } else {
+        return 418;
     }
 }
 
