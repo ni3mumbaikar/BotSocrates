@@ -14,7 +14,8 @@ var helpDescription =
   "Parameter : _Instagram username or profile link_\n" +
   "Alias : _idp_" +
   "\n\n*/ytv* : Download youtube short videos 🎞️\n" +
-  "Parameter : _youtube shorts video link_\n"
+  "Parameter : _youtube shorts video link_" +
+  "\n\n*/technews* : Get Latest TechNews 📰"
   ;
 
 
