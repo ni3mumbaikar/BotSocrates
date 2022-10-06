@@ -43,7 +43,7 @@ module.exports = async function download(sock, msg, url, chatId) {
 
 function urlParse(ytv_url) {
     ytv_url = ytv_url.toString();
-    if (ytv_url.includes("youtube.com/shorts")) {
+    if (ytv_url.includes("youtube.com/shorts") || ytv_url.startsWith("https://www.youtube.com/watch?v=")) {
         return ytv_url;
     } else if (ytv_url.startsWith("https://youtu.be/")) {
         return "https://youtube.com/shorts/" + ytv_url.split('/')[3];
