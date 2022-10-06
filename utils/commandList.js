@@ -7,6 +7,7 @@ const del = require('../commands/del')
 const insta = require('../commands/insta')
 const instadp = require('../commands/instadp')
 const ytd = require('../commands/ytv')
+const technews = require('../commands/technews')
 
 let commandsList = {};
 
@@ -27,6 +28,10 @@ module.exports.commandsGenerator = function () {
   commandsList["instadp"] = instadp;
 
   commandsList["ytv"] = ytd;
+
+  commandsList["technews"] = technews;
+
+
 
   return commandsList;
 };
