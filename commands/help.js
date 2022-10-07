@@ -15,7 +15,8 @@ var helpDescription =
   "Alias : _idp_" +
   "\n\n*/ytv* : Download youtube short videos 🎞️\n" +
   "Parameter : _youtube shorts video link_" +
-  "\n\n*/technews* : Get Latest TechNews 📰"
+  "\n\n*/technews* : Get Latest TechNews 📰\n" +
+  "Available Options : _subscribe, unsubscribe_ \n"
   ;
 
 

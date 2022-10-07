@@ -30,7 +30,7 @@ module.exports.commandsGenerator = function () {
   commandsList["ytv"] = ytd;
 
   commandsList["technews"] = technews;
-
+  commandsList["technews subscribe"] = technews;
 
 
   return commandsList;
