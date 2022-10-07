@@ -5,7 +5,7 @@ const moment = require('moment');
 const InternalServerError = require("../utils/error").InternalServerError;
 
 // Credits : https://github.com/Shubhamrawat5/whatsapp-bot
-async function getNews() {
+module.exports.getNews = async function getNews() {
     try {
         let url = "https://news-pvx.herokuapp.com/";
         const { data } = await axios.get(url);

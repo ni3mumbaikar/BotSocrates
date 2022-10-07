@@ -14,6 +14,7 @@
     "instagram-url-downloader": "^1.1.0",
     "moment": "^2.29.4",
     "mongodb": "^4.10.0",
+    "node-cron": "^3.0.2",
     "pino": "^8.4.0",
     "qrcode-terminal": "^0.12.0",
     "url-params-parser": "^1.0.4",
