@@ -5,13 +5,13 @@ const cron = require("node-cron");
 const getNews = require("../commands/technews").getNews;
 
 // cron expression
-// 0 0 7,19 ? * * * => for 7:00 PM every day  
+// 0 0 7,19 * * * * => for 7:00 PM every day
 
 
 module.exports.setUpCrons = async function (sock) {
 
 
-    cron.schedule("0 0 7,19 ? * * *", async function () {
+    cron.schedule("0 0 7,19 * * * *", async function () {
         let URI = process.env.MONGO_URI;
         const client = new MongoClient(URI);
         try {
@@ -33,4 +33,3 @@ module.exports.setUpCrons = async function (sock) {
     });
 
 }
-
