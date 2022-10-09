@@ -40,7 +40,7 @@ module.exports.handler = function handleMessage(sock, msg) {
 
 async function switchMaster(sock, msg, command) {
   let id = msg.key.remoteJid;
-  command = command.slice(1);
+  command = command.slice(1); //removed the prefix
   if (command.includes(" ")) {
     if (command.split(" ").length == 2) {
       let commandWithoutOption = command.split(" ")[0];
@@ -49,10 +49,20 @@ async function switchMaster(sock, msg, command) {
         await commands[commandWithoutOption].replyForCommandWithOption(sock, msg, option);
       }
       else {
-
+        commnadNotFound(sock, msg)
       }
     } else {
-      let sentMsg = await sock.sendMessage(id, { text: "Multi command options are not supported yet", }, { quoted: msg });
+      let maincommand = command.split(" ")[0];
+      let multicommand = command.split(" ").slice(1).join(" "); // removing command in and passing remaning string as it is for multi command
+      if (commands[maincommand]) {
+        if (commands[maincommand].replyForCommandWithMultiOptions) {
+          commands[maincommand].replyForCommandWithMultiOptions(sock, msg, multicommand);
+          // let sentMsg = await sock.sendMessage(id, { text: "Multi command options are supported work in progress", }, { quoted: msg });
+        } else {
+          let sentMsg = await sock.sendMessage(id, { text: "Multi command options are not supported yet", }, { quoted: msg });
+        }
+      }
+
     }
   } else {
     if (commands[command]) {

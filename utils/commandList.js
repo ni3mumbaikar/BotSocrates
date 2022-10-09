@@ -8,6 +8,7 @@ const insta = require('../commands/insta')
 const instadp = require('../commands/instadp')
 const ytd = require('../commands/ytv')
 const technews = require('../commands/technews')
+const carbon = require('../commands/carbon')
 
 let commandsList = {};
 
@@ -31,6 +32,8 @@ module.exports.commandsGenerator = function () {
 
   commandsList["technews"] = technews;
   commandsList["technews subscribe"] = technews;
+
+  commandsList["carbon"] = carbon;
 
 
   return commandsList;
