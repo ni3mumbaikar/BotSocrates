@@ -6,6 +6,7 @@ yarn.lock
 package-lock.json
 
 assets/stickers
+assets/others/profanitydb.js
 
 # Logs
 logs

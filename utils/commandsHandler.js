@@ -6,6 +6,7 @@ const commandsList = require("./commandList");
 
 let PREFIX = process.env.PREFIX;
 var commands = commandsList.commandsGenerator();
+const badWordsDetector = require('../utils/profanityManager').badWordsDetector;
 
 console.log('--------------------------------- BOT SOCRATES INITIALIZED ---------------------------------');
 
@@ -20,18 +21,20 @@ module.exports.handler = function handleMessage(sock, msg) {
     // console.log(msg);
     if (
       msg.message.extendedTextMessage &&
-      msg.message.extendedTextMessage.text &&
-      msg.message.extendedTextMessage.text.startsWith(PREFIX)
+      msg.message.extendedTextMessage.text
     ) {
-      switchMaster(sock, msg, msg.message.extendedTextMessage.text);
+      badWordsDetector(sock, msg, msg.message.extendedTextMessage.text);
+      if (msg.message.extendedTextMessage.text.startsWith(PREFIX))
+        switchMaster(sock, msg, msg.message.extendedTextMessage.text);
     }
 
     // checks for simple conversations in group and personal
     else if (
-      msg.message.conversation &&
-      msg.message.conversation.startsWith(PREFIX)
+      msg.message.conversation
     ) {
-      switchMaster(sock, msg, msg.message.conversation);
+      badWordsDetector(sock, msg, msg.message.conversation);
+      if (msg.message.conversation.startsWith(PREFIX))
+        switchMaster(sock, msg, msg.message.conversation);
     }
   }
 };
