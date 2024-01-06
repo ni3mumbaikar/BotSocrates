@@ -1,14 +1,13 @@
 /* --------------------------------- IMPORTS --------------------------------- */
 const help = require("../commands/help");
 const alive = require("../commands/alive");
-const naughty = require('../commands/naughty')
-const sticker = require('../commands/sticker')
-const del = require('../commands/del')
-const insta = require('../commands/insta')
-const instadp = require('../commands/instadp')
-const ytd = require('../commands/ytv')
-const technews = require('../commands/technews')
-const carbon = require('../commands/carbon')
+const sticker = require("../commands/sticker");
+const del = require("../commands/del");
+const insta = require("../commands/insta");
+const instadp = require("../commands/instadp");
+const ytd = require("../commands/ytv");
+const technews = require("../commands/technews");
+const carbon = require("../commands/carbon");
 
 let commandsList = {};
 
@@ -18,7 +17,6 @@ module.exports.commandsGenerator = function () {
   commandsList["h"] = help;
 
   commandsList["alive"] = alive;
-  commandsList["naughty"] = naughty;
   commandsList["sticker"] = sticker;
   commandsList["del"] = del;
 
@@ -34,7 +32,6 @@ module.exports.commandsGenerator = function () {
   commandsList["technews subscribe"] = technews;
 
   commandsList["carbon"] = carbon;
-
 
   return commandsList;
 };
