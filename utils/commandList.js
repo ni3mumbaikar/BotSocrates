@@ -8,6 +8,7 @@ const instadp = require("../commands/instadp");
 const ytd = require("../commands/ytv");
 const technews = require("../commands/technews");
 const carbon = require("../commands/carbon");
+const enableXandZero = require("../commands/games/xandzero/enableXandZero");
 
 let commandsList = {};
 
@@ -32,6 +33,7 @@ module.exports.commandsGenerator = function () {
   commandsList["technews subscribe"] = technews;
 
   commandsList["carbon"] = carbon;
+  commandsList["enableXandZero"] = enableXandZero;
 
   return commandsList;
 };
