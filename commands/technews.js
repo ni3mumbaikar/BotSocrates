@@ -11,7 +11,7 @@ module.exports.getNews = async function () {
     const { data } = await axios.get(url);
 
     let msg = "💻🤖🦾 Tech News 🎧🖥️👩🏾‍💻";
-    let inshorts = data.inshorts;
+    let inshorts = data["gadgets-now"];
     let count = 0; //for first 14 news only
     for (let i = 0; i < inshorts.length; ++i) {
       ++count;
