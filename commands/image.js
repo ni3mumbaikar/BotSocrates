@@ -3,8 +3,9 @@ const P = require("pino");
 const { downloadMediaMessage } = require("@whiskeysockets/baileys");
 const { writeFile } = require("fs/promises");
 const { exec } = require("child_process");
+const os = require('os');
 
-const magickPath = "magick"; // Ensure ImageMagick is installed
+const magickPath = os.platform() === 'linux' ? 'convert' : 'magick'; // Use 'convert' for Linux (Ubuntu-like) and 'magick' for others
 const ffmpegPath = "ffmpeg"; // Ensure ffmpeg is installed
 
 const getRandomName = (ext) => {
