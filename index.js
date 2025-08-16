@@ -1,17 +1,14 @@
+require('dotenv').config();
 /* --------------------------------- IMPORTS --------------------------------- */
 const P = require("pino");
+const qrcode = require("qrcode-terminal");
 const commandsHandler = require("./utils/commandsHandler");
 const setUpCrons = require("./utils/crons").setUpCrons;
 
 const {
   default: makeWASocket,
   DisconnectReason,
-  AnyMessageContent,
-  delay,
   useMultiFileAuthState,
-  makeInMemoryStore,
-  fetchLatestBaileysVersion,
-  downloadContentFromMessage,
 } = require("@whiskeysockets/baileys");
 
 /* --------------------------------- MAIN METHOD --------------------------------- */
@@ -20,7 +17,6 @@ async function connectToWhatsApp() {
   const { state, saveCreds } = await useMultiFileAuthState("auth_info_baileys");
 
   const sock = makeWASocket({
-    printQRInTerminal: true,
     auth: state,
     logger: P({ level: "silent" }),
   });
@@ -28,19 +24,23 @@ async function connectToWhatsApp() {
   sock.ev.on("creds.update", saveCreds);
 
   sock.ev.on("connection.update", async (update) => {
-    const { connection, lastDisconnect } = update;
+    const { connection, lastDisconnect, qr } = update;
+
+    if (qr) {
+      qrcode.generate(qr, { small: true });
+    }
+
     if (connection === "close") {
       let shouldReconnect =
-        lastDisconnect.error.output.statusCode !== DisconnectReason.loggedOut;
+        lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
       console.log(
         "connection closed due to ",
-        lastDisconnect.error,
+        lastDisconnect?.error,
         ", reconnecting ",
         shouldReconnect
       );
 
       if (shouldReconnect) {
-        shouldReconnect = false;
         await connectToWhatsApp();
       }
     }
@@ -48,7 +48,7 @@ async function connectToWhatsApp() {
 
   sock.ev.on("messages.upsert", async (m) => {
     const msg = JSON.parse(JSON.stringify(m)).messages[0];
-    if (!msg.message) return; //when demote, add, remove, etc happen then msg.message is not there
+    if (!msg.message) return; // skip if no actual message (group events)
     await commandsHandler.handler(sock, msg);
   });
 
@@ -61,4 +61,5 @@ async function connectToWhatsApp() {
 
 /* --------------------------------- PROGRAM STARTS HERE --------------------------------- */
 
+console.log("--------------------------------- BOT SOCRATES INITIALIZED ---------------------------------");
 connectToWhatsApp();

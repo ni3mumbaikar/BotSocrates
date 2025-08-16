@@ -7,19 +7,14 @@ var helpDescription =
   "Alias : _h_" +
   "\n\n*/sticker* : Create stickers from any Image/GIF/Video 🖼️\n" +
   "Available Options : _default_, _crop_, _full_ " +
+  "\n\n*/image* : Convert stickers to GIF or Image 🖼️\n" +
+  "Alias : _img_" +
   "\n\n*/insta* : Download any public Image/Video from instagram ⬇️\n" +
   "Parameter : _Instagram content link_\n" +
   "Alias : _igd_" +
   "\n\n*/instadp* : Download profile picture from instagram by username or profile link 📷\n" +
   "Parameter : _Instagram username or profile link_\n" +
-  "Alias : _idp_" +
-  "\n\n*/ytv* : Download youtube short videos 🎞️\n" +
-  "Parameter : _youtube shorts video link_" +
-  "\n\n*/technews* : Get Latest TechNews 📰\n" +
-  "Available Options : _subscribe, unsubscribe_" +
-  "\n\n*/carbon* : Get beautiful code image 📸\n" +
-  "Parameter : _Any Code_ \n"
-  ;
+  "Alias : _idp_";
 
 
 module.exports.reply = async function (sock, msg) {

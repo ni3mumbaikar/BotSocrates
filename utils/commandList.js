@@ -8,6 +8,7 @@ const instadp = require("../commands/instadp");
 const ytd = require("../commands/ytv");
 const technews = require("../commands/technews");
 const carbon = require("../commands/carbon");
+const image = require("../commands/image")
 
 let commandsList = {};
 
@@ -32,6 +33,9 @@ module.exports.commandsGenerator = function () {
   commandsList["technews subscribe"] = technews;
 
   commandsList["carbon"] = carbon;
+
+  commandsList["image"] = image;
+  commandsList["img"] = image
 
   return commandsList;
 };

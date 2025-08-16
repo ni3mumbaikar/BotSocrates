@@ -3,12 +3,11 @@ const { Sticker, createSticker } = require("wa-sticker-formatter");
 const path = require("path");
 const P = require("pino");
 const { downloadMediaMessage } = require("@whiskeysockets/baileys");
-const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path;
 const ffmpeg = require("fluent-ffmpeg");
 const { writeFile } = require("fs/promises");
 const { downloadContentFromMessage } = require("@whiskeysockets/baileys");
 
-ffmpeg.setFfmpegPath(ffmpegPath);
+ffmpeg.setFfmpegPath(process.env.FFMPEG_PATH);
 
 const vlen = 10;
 
@@ -197,7 +196,6 @@ async function bufferMakerandSender(sock, msg, sizeOption, isVideo) {
     const stickerbuffer = await createSticker(buffer, stickerOptions).catch(
       (err) => {
         async () => {
-          console.log(err);
           let sentMsg = await sock.sendMessage(
             id,
             { text: "Something broke !" },
