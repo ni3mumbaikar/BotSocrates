@@ -43,3 +43,19 @@ BotSocrates is Just another whatsapp bot but it can do things the way I want !
 
 :warning: 404 ERROR GUIDE NOT FOUND
 
+## Environment Variables
+
+To run this bot, you need to ensure the following are correctly set up:
+
+*   **Python**: Installed on your system.
+*   **`gtts` Python Library**: Installed via `pip` (`pip install gtts`).
+*   **`ffmpeg`**: Installed and its executable path set in your `.env` file.
+
+Create a `.env` file in the root directory of the project and add the following line for `ffmpeg`:
+
+```
+FFMPEG_PATH="/path/to/your/ffmpeg"
+```
+
+Replace `/path/to/your/ffmpeg` with the actual absolute path to your `ffmpeg` executable. For example, on Windows, it might be `C:\ffmpeg\bin\ffmpeg.exe` or on Linux/macOS, it could be `/usr/local/bin/ffmpeg`.
+

@@ -12,6 +12,9 @@ var helpDescription =
   "\n\n*/insta* : Download any public Image/Video from instagram ⬇️\n" +
   "Parameter : _Instagram content link_\n" +
   "Alias : _igd_" +
+  "\n\n*/tts* : Convert text to speech 🔊\n" +
+  "Parameter : _Text to convert_\n" +
+  "Alias : _speak_" +
   "\n\n*/instadp* : Download profile picture from instagram by username or profile link 📷\n" +
   "Parameter : _Instagram username or profile link_\n" +
   "Alias : _idp_";

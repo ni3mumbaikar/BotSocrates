@@ -61,5 +61,5 @@ async function connectToWhatsApp() {
 
 /* --------------------------------- PROGRAM STARTS HERE --------------------------------- */
 
-console.log("--------------------------------- BOT SOCRATES INITIALIZED ---------------------------------");
+console.log("Starting Bot Socrates...");
 connectToWhatsApp();

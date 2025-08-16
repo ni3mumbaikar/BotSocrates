@@ -3,9 +3,12 @@ require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
 const commandsList = require("./commandList");
+const tts = require("../commands/tts");
 
 let PREFIX = process.env.PREFIX;
 var commands = commandsList.commandsGenerator();
+commands.tts = tts; // Register the tts command
+commands.speak = tts; // Register the speak alias
 // const badWordsDetector = require('../utils/profanityManager').badWordsDetector;
 
 console.log(
@@ -48,11 +51,19 @@ async function switchMaster(sock, msg, command) {
       let commandWithoutOption = command.split(" ")[0];
       let option = command.split(" ")[1];
       if (commands[commandWithoutOption]) {
-        await commands[commandWithoutOption].replyForCommandWithOption(
-          sock,
-          msg,
-          option
-        );
+        if (commandWithoutOption === "tts" || commandWithoutOption === "speak") {
+          await commands[commandWithoutOption].replyForCommandWithMultiOptions(
+            sock,
+            msg,
+            option
+          );
+        } else {
+          await commands[commandWithoutOption].replyForCommandWithOption(
+            sock,
+            msg,
+            option
+          );
+        }
       } else {
         commnadNotFound(sock, msg);
       }
