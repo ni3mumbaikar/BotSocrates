@@ -94,7 +94,7 @@ async function imageSender(sock, msg) {
       const outputPath = getRandomName(".png");
       await writeFile(inputPath, buffer);
 
-      const command = `"${magickPath}" convert "${inputPath}" -resize 320x "${outputPath}"`;
+      const command = `"${magickPath}" "${inputPath}" -resize 320x "${outputPath}"`;
 
       exec(command, async (error, stdout, stderr) => {
         if (error) {
