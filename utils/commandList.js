@@ -10,6 +10,8 @@ const technews = require("../commands/technews");
 const carbon = require("../commands/carbon");
 const image = require("../commands/image")
 const tts = require("../commands/tts");
+const shortener = require("../commands/shortener");
+// const text_overlay = require("../commands/text_overlay");
 
 let commandsList = {};
 
@@ -40,6 +42,14 @@ module.exports.commandsGenerator = function () {
 
   commandsList["tts"] = tts;
   commandsList["speak"] = tts;
+
+  commandsList["shortener"] = shortener;
+  commandsList["short"] = shortener;
+
+  /*
+  commandsList["textoverlay"] = text_overlay;
+  commandsList["to"] = text_overlay;
+  */
 
   return commandsList;
 };

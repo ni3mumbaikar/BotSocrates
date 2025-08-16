@@ -20,7 +20,8 @@
     "unofficial-carbon-now": "^1.0.6",
     "url-params-parser": "^1.0.4",
     "wa-sticker-formatter": "^4.3.2",
-    "ytdl-core": "^4.11.2"
+    "ytdl-core": "^4.11.2",
+    "axios": "^1.0.0"
   },
   "scripts": {
     "tsc": "tsc",

@@ -51,7 +51,10 @@ async function switchMaster(sock, msg, command) {
       let commandWithoutOption = command.split(" ")[0];
       let option = command.split(" ")[1];
       if (commands[commandWithoutOption]) {
-        if (commandWithoutOption === "tts" || commandWithoutOption === "speak") {
+        // Special handling for commands that don't use the 'option' parameter as a separate command option
+        if (["tts", "speak", "shortener", "short"/*, "textoverlay", "to"*/].includes(commandWithoutOption)) {
+          await commands[commandWithoutOption].reply(sock, msg);
+        } else if (commands[commandWithoutOption].replyForCommandWithMultiOptions) {
           await commands[commandWithoutOption].replyForCommandWithMultiOptions(
             sock,
             msg,
