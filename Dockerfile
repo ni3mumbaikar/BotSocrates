@@ -1,5 +1,5 @@
-# Use Node.js 18 slim image based on Debian Bullseye
-FROM node:18-bullseye-slim
+# Use Node.js 20 slim image (provides global WebCrypto API for Baileys)
+FROM node:20-bullseye-slim
 
 # Install system-level dependencies:
 # - python3 & python3-pip (for gTTS text-to-speech engine wrapper)
