@@ -12,13 +12,13 @@ module.exports.reply = async function (sock, msg) {
   let id = msg.key.remoteJid;
   let text = msg.message.conversation || msg.message.extendedTextMessage.text;
 
-  if (!text || text.startsWith('/tts')) {
-    await sock.sendMessage(id, { text: "Please provide text after the command, e.g., `/tts Hello world`" }, { quoted: msg });
-    return;
-  }
+  if (!text) return;
 
-  // Remove the /tts command part from the text
-  const ttsText = text.replace(/^\/tts\s*/i, '').trim();
+  // Remove the command prefix dynamically using the PREFIX environment variable
+  const prefix = process.env.PREFIX || "/";
+  const escapedPrefix = prefix.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+  const ttsRegex = new RegExp(`^${escapedPrefix}(tts|speak)\\s*`, 'i');
+  const ttsText = text.replace(ttsRegex, '').trim();
 
   if (ttsText.length === 0) {
     await sock.sendMessage(id, { text: "Please provide text after the command, e.g., `/tts Hello world`" }, { quoted: msg });
