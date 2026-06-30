@@ -23,6 +23,8 @@ var helpDescription =
   "Parameter : _Quote an image/sticker and provide text in caption_\n" +
   "Alias : _to_" +
   */
+  "\n\n*/jail* : Put someone in jail by overlaying prison bars on their image/sticker 🚨\n" +
+  "Parameter : _Quote an image/sticker or send it with `/jail` caption_\n" +
   "\n\n*/instadp* : Download profile picture from instagram by username or profile link 📷\n" +
   "Parameter : _Instagram username or profile link_\n" +
   "Alias : _idp_";

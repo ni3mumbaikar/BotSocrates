@@ -11,6 +11,7 @@ const carbon = require("../commands/carbon");
 const image = require("../commands/image")
 const tts = require("../commands/tts");
 const shortener = require("../commands/shortener");
+const jail = require("../commands/jail");
 // const text_overlay = require("../commands/text_overlay");
 
 let commandsList = {};
@@ -45,6 +46,8 @@ module.exports.commandsGenerator = function () {
 
   commandsList["shortener"] = shortener;
   commandsList["short"] = shortener;
+
+  commandsList["jail"] = jail;
 
   /*
   commandsList["textoverlay"] = text_overlay;
