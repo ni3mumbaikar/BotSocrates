@@ -113,7 +113,7 @@ Because the bot operates headlessly, it prints the authentication QR code direct
 1. In Portainer, click on the **socrates-bot** container.
 2. Open the **Container Logs**.
 3. Scan the rendered terminal QR code with your phone's WhatsApp Web scanner to establish the session.
-4. Once authenticated, the tokens will be persisted inside the host's `./auth_info_baileys` folder via the Docker volume mount, keeping the bot signed in even if the container is updated or restarted.
+4. **Note:** To prevent `405 Connection Failure` crash loops from stale WhatsApp sessions, the Docker container is configured to clear the `./auth_info_baileys` keys on every startup. You will need to re-scan the QR code each time the container restarts.
 
 ---
 
