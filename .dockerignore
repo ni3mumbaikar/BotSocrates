@@ -1,0 +1,16 @@
+node_modules
+auth_info_baileys
+.env
+.env.*
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.git
+.idea
+.vscode
+Dockerfile
+docker-compose.yml
+index.md
+README.md
+LICENSE.md
