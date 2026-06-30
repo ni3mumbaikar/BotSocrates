@@ -12,8 +12,12 @@ const getRandomName = (ext) => {
 };
 
 async function getImageDimensions(imagePath) {
+  const identifyCmd = os.platform() === 'linux' 
+    ? `identify -format "%w,%h" "${imagePath}"` 
+    : `magick identify -format "%w,%h" "${imagePath}"`;
+
   return new Promise((resolve, reject) => {
-    exec(`"${magickPath}" identify -format "%w,%h" "${imagePath}"`, (error, stdout, stderr) => {
+    exec(identifyCmd, (error, stdout, stderr) => {
       if (error) {
         console.error("Error getting image dimensions:", error);
         return reject(error);
