@@ -1,25 +1,23 @@
+version: '3.8'
+
 services:
   bot:
     build: .
-    container_name: socrates-bot
+    container_name: socrates-bot-prod
     restart: unless-stopped
+    # Overrides the Dockerfile command to remove the --watch flag for production
+    command: ["sh", "-c", "rm -rf auth_info_baileys/* && node index.js"]
     env_file:
       - .env
     volumes:
-      # Mount the current directory for live local development
-      - ./:/usr/src/app
-      # Prevent the host from overwriting the container's node_modules
-      - /usr/src/app/node_modules
       # Persist the WhatsApp session files so you don't need to re-scan the QR code on every restart
       - ./auth_info_baileys:/usr/src/app/auth_info_baileys
-      # Optional: Mount the assets folder if you have it locally
-      # - ./assets:/usr/src/app/assets
     depends_on:
       - mongodb
 
   mongodb:
     image: mongo:6.0
-    container_name: socrates-mongodb
+    container_name: socrates-mongodb-prod
     restart: unless-stopped
     ports:
       # Binds only to localhost on the host machine for security

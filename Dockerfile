@@ -38,5 +38,5 @@ ENV NODE_ENV=production
 ENV FFMPEG_PATH=/usr/bin/ffmpeg
 ENV PREFIX=/
 
-# Run the WhatsApp bot (clearing session keys on every startup to prevent 405 loop)
-CMD ["sh", "-c", "rm -rf auth_info_baileys/* && npm start"]
+# Run the WhatsApp bot using Node's native watch mode for live reloading
+CMD ["sh", "-c", "rm -rf auth_info_baileys/* && node --watch index.js"]
