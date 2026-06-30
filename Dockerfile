@@ -21,8 +21,8 @@ WORKDIR /usr/src/app
 # Copy dependency definition files
 COPY package*.json ./
 
-# Install Node production dependencies (clean install)
-RUN npm ci --only=production
+# Install Node production dependencies
+RUN npm install --omit=dev
 
 # Copy the rest of the application files
 COPY . .
