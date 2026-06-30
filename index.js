@@ -9,14 +9,18 @@ const {
   default: makeWASocket,
   DisconnectReason,
   useMultiFileAuthState,
+  fetchLatestBaileysVersion,
 } = require("@whiskeysockets/baileys");
 
 /* --------------------------------- MAIN METHOD --------------------------------- */
 
 async function connectToWhatsApp() {
   const { state, saveCreds } = await useMultiFileAuthState("auth_info_baileys");
+  const { version, isLatest } = await fetchLatestBaileysVersion();
+  console.log(`using WA v${version.join(".")}, isLatest: ${isLatest}`);
 
   const sock = makeWASocket({
+    version,
     auth: state,
     logger: P({ level: "silent" }),
   });
