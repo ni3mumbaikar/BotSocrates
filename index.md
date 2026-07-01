@@ -35,6 +35,7 @@ graph TD
 Each command module in this folder handles a specific WhatsApp interaction. Most files export `reply`, `replyForCommandWithOption`, and `replyForCommandWithMultiOptions` functions.
 
 *   [alive.js](file:///d:/coding2/BotSocrates/commands/alive.js) — Responds with a simple status message to verify if the bot is online.
+*   [ping.js](file:///d:/coding2/BotSocrates/commands/ping.js) — A lightweight infrastructure test that calculates delta latency and returns server status.
 *   [help.js](file:///d:/coding2/BotSocrates/commands/help.js) — Constructs and sends the command helper menu. Includes a hidden `"admin"` option placeholder.
 *   [sticker.js](file:///d:/coding2/BotSocrates/commands/sticker.js) — Converts incoming or quoted media (Images, GIFs, Videos) into WhatsApp WebP stickers using the `wa-sticker-formatter` library and system `ffmpeg`. Supports options like `crop`, `full`, and `default`.
 *   [image.js](file:///d:/coding2/BotSocrates/commands/image.js) — Converts quoted WebP stickers back into standard media (PNG for static stickers, MP4 for animated stickers) using ImageMagick (`magick` or `convert`) and `ffmpeg`.

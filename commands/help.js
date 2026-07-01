@@ -2,6 +2,8 @@ var helpDescription =
   "🖐️🤩 Hello Bot Socrates here \n\n" +
   "Following are the commands that you can use for now !" +
   "\n\n*/alive* : To check I am dead or alive 😨" +
+  "\n\n*/ping* : A lightweight infrastructure test to check latency and server status ⚡\n" +
+  "Alias : _p_" +
   "\n\n*/help* : To get this menu 📝\n" +
   "Available Options : _admin_ \n" +
   "Alias : _h_" +

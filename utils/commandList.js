@@ -12,6 +12,7 @@ const image = require("../commands/image")
 const tts = require("../commands/tts");
 const shortener = require("../commands/shortener");
 const jail = require("../commands/jail");
+const ping = require("../commands/ping");
 // const text_overlay = require("../commands/text_overlay");
 
 let commandsList = {};
@@ -22,6 +23,8 @@ module.exports.commandsGenerator = function () {
   commandsList["h"] = help;
 
   commandsList["alive"] = alive;
+  commandsList["ping"] = ping;
+  commandsList["p"] = ping;
   commandsList["sticker"] = sticker;
   commandsList["del"] = del;
 
