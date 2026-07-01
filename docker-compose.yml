@@ -5,6 +5,7 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    command: ["sh", "-c", "rm -rf auth_info_baileys/* && node --watch index.js"]
     volumes:
       # Mount the current directory for live local development
       - ./:/usr/src/app

@@ -5,8 +5,6 @@ services:
     build: .
     container_name: socrates-bot-prod
     restart: unless-stopped
-    # Overrides the Dockerfile command to remove the --watch flag for production
-    command: ["sh", "-c", "rm -rf auth_info_baileys/* && node index.js"]
     env_file:
       - .env
     volumes:

@@ -44,58 +44,48 @@ module.exports.handler = function handleMessage(sock, msg) {
 /* --------------------------------- COMMAND ROUTER --------------------------------- */
 
 async function switchMaster(sock, msg, command) {
-  let id = msg.key.remoteJid;
-  command = command.slice(1); //removed the prefix
-  if (command.includes(" ")) {
-    if (command.split(" ").length == 2) {
-      let commandWithoutOption = command.split(" ")[0];
-      let option = command.split(" ")[1];
-      if (commands[commandWithoutOption]) {
-        // Special handling for commands that don't use the 'option' parameter as a separate command option
-        if (["tts", "speak", "shortener", "short"/*, "textoverlay", "to"*/].includes(commandWithoutOption)) {
-          await commands[commandWithoutOption].reply(sock, msg);
-        } else if (commands[commandWithoutOption].replyForCommandWithMultiOptions) {
-          await commands[commandWithoutOption].replyForCommandWithMultiOptions(
-            sock,
-            msg,
-            option
-          );
-        } else {
-          await commands[commandWithoutOption].replyForCommandWithOption(
-            sock,
-            msg,
-            option
-          );
-        }
+  command = command.slice(1).trim(); // remove prefix and trim
+  if (!command) return;
+
+  let firstSpace = command.indexOf(" ");
+  let mainCommand, args;
+
+  if (firstSpace !== -1) {
+    mainCommand = command.substring(0, firstSpace).trim();
+    args = command.substring(firstSpace + 1).trim();
+  } else {
+    mainCommand = command;
+    args = "";
+  }
+
+  if (commands[mainCommand]) {
+    if (args) {
+      if (commands[mainCommand].replyForCommandWithMultiOptions) {
+        await commands[mainCommand].replyForCommandWithMultiOptions(
+          sock,
+          msg,
+          args
+        );
+      } else if (commands[mainCommand].replyForCommandWithOption) {
+        await commands[mainCommand].replyForCommandWithOption(
+          sock,
+          msg,
+          args
+        );
+      } else if (commands[mainCommand].reply) {
+        await commands[mainCommand].reply(sock, msg);
       } else {
-        commnadNotFound(sock, msg);
+        await commnadNotFound(sock, msg);
       }
     } else {
-      let maincommand = command.split(" ")[0];
-      let multicommand = command.split(" ").slice(1).join(" "); // removing command in and passing remaning string as it is for multi command
-      if (commands[maincommand]) {
-        if (commands[maincommand].replyForCommandWithMultiOptions) {
-          commands[maincommand].replyForCommandWithMultiOptions(
-            sock,
-            msg,
-            multicommand
-          );
-          // let sentMsg = await sock.sendMessage(id, { text: "Multi command options are supported work in progress", }, { quoted: msg });
-        } else {
-          let sentMsg = await sock.sendMessage(
-            id,
-            { text: "Multi command options are not supported yet" },
-            { quoted: msg }
-          );
-        }
+      if (commands[mainCommand].reply) {
+        await commands[mainCommand].reply(sock, msg);
+      } else {
+        await commnadNotFound(sock, msg);
       }
     }
   } else {
-    if (commands[command]) {
-      await commands[command].reply(sock, msg);
-    } else {
-      commnadNotFound(sock, msg);
-    }
+    await commnadNotFound(sock, msg);
   }
 }
 
