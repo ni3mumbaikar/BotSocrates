@@ -11,9 +11,6 @@ var helpDescription =
   "Available Options : _default_, _crop_, _full_ " +
   "\n\n*/image* : Convert stickers to GIF or Image 🖼️\n" +
   "Alias : _img_" +
-  "\n\n*/insta* : Download any public Image/Video from instagram ⬇️\n" +
-  "Parameter : _Instagram content link_\n" +
-  "Alias : _igd_" +
   "\n\n*/tts* : Convert text to speech 🔊\n" +
   "Parameter : _Text to convert_\n" +
   "Alias : _speak_" +
@@ -26,10 +23,7 @@ var helpDescription =
   "Alias : _to_" +
   */
   "\n\n*/jail* : Put someone in jail by overlaying prison bars on their image/sticker 🚨\n" +
-  "Parameter : _Quote an image/sticker or send it with `/jail` caption_\n" +
-  "\n\n*/instadp* : Download profile picture from instagram by username or profile link 📷\n" +
-  "Parameter : _Instagram username or profile link_\n" +
-  "Alias : _idp_";
+  "Parameter : _Quote an image/sticker or send it with `/jail` caption_";
 
 
 module.exports.reply = async function (sock, msg) {

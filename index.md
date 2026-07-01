@@ -39,8 +39,6 @@ Each command module in this folder handles a specific WhatsApp interaction. Most
 *   [help.js](file:///d:/coding2/BotSocrates/commands/help.js) — Constructs and sends the command helper menu. Includes a hidden `"admin"` option placeholder.
 *   [sticker.js](file:///d:/coding2/BotSocrates/commands/sticker.js) — Converts incoming or quoted media (Images, GIFs, Videos) into WhatsApp WebP stickers using the `wa-sticker-formatter` library and system `ffmpeg`. Supports options like `crop`, `full`, and `default`.
 *   [image.js](file:///d:/coding2/BotSocrates/commands/image.js) — Converts quoted WebP stickers back into standard media (PNG for static stickers, MP4 for animated stickers) using ImageMagick (`magick` or `convert`) and `ffmpeg`.
-*   [insta.js](file:///d:/coding2/BotSocrates/commands/insta.js) — Downloads Instagram media (posts/reels) from a given link via the `InstaDownloader` utility.
-*   [instadp.js](file:///d:/coding2/BotSocrates/commands/instadp.js) — Downloads and prints high-definition profile pictures and info (followers, following count, bio) for a given Instagram username.
 *   [tts.js](file:///d:/coding2/BotSocrates/commands/tts.js) — Text-to-speech engine. Invokes `gtts_script.py` to compile text to MP3 and uses `ffmpeg` to transcode it to a WhatsApp-compatible Opus OGG file.
 *   [shortener.js](file:///d:/coding2/BotSocrates/commands/shortener.js) — Shortens any provided URL using the TinyURL API.
 *   [technews.js](file:///d:/coding2/BotSocrates/commands/technews.js) — Fetches daily tech news from an external API. Contains MongoDB helper methods for managing user subscriptions to daily news broadcasts.
@@ -57,8 +55,7 @@ Each command module in this folder handles a specific WhatsApp interaction. Most
 Shared utilities, helper scripts, and application logic.
 
 *   [commandsHandler.js](file:///d:/coding2/BotSocrates/utils/commandsHandler.js) — The primary command router. Checks if the incoming message starts with `process.env.PREFIX`, strips the prefix, extracts parameters, and invokes the matching command function based on argument counts.
-*   [commandList.js](file:///d:/coding2/BotSocrates/utils/commandList.js) — Acts as a command registry mapping triggers and aliases (e.g. `h` -> `help`, `igd` -> `insta`, `speak` -> `tts`) to the exported command functions.
-*   [InstaDownloader.js](file:///d:/coding2/BotSocrates/utils/InstaDownloader.js) — Features core scraping logic to retrieve Instagram media urls, profiles, and download media via HTTP requests. Requires `ICOOKIE` environment variable configuration.
+*   [commandList.js](file:///d:/coding2/BotSocrates/utils/commandList.js) — Acts as a command registry mapping triggers and aliases (e.g. `h` -> `help`, `speak` -> `tts`) to the exported command functions.
 *   [YtDownloader.js](file:///d:/coding2/BotSocrates/utils/YtDownloader.js) — Streams YouTube video payloads under a specific duration threshold (defaults to 5 minutes) via `ytdl-core` and sends them as native WhatsApp video clips.
 *   [carbonGenerator.js](file:///d:/coding2/BotSocrates/utils/carbonGenerator.js) — Handles interaction with the `unofficial-carbon-now` package to generate images of code.
 *   [crons.js](file:///d:/coding2/BotSocrates/utils/crons.js) — Manages scheduled triggers using the `node-cron` package. Periodically runs twice daily (at 7 AM and 7 PM) to send technology news updates to valid subscribers in the MongoDB database.
@@ -96,7 +93,7 @@ Copy the [.env.example](file:///d:/coding2/BotSocrates/.env.example) file to a `
 ```bash
 cp .env.example .env
 ```
-Fill out the required variables (especially `NEWS_API` and `ICOOKIE`). By default, `MONGO_URI` is preset to target the internal `mongodb` service defined in the compose file.
+Fill out the required variables (especially `NEWS_API`). By default, `MONGO_URI` is preset to target the internal `mongodb` service defined in the compose file.
 
 ### 2. Deploy using Docker Compose (or Portainer Stacks)
 Run the following command in the root folder:
