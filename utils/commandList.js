@@ -3,9 +3,6 @@ const help = require("../commands/help");
 const alive = require("../commands/alive");
 const sticker = require("../commands/sticker");
 const del = require("../commands/del");
-const ytd = require("../commands/ytv");
-const technews = require("../commands/technews");
-const carbon = require("../commands/carbon");
 const image = require("../commands/image")
 const tts = require("../commands/tts");
 const shortener = require("../commands/shortener");
@@ -25,13 +22,6 @@ module.exports.commandsGenerator = function () {
   commandsList["p"] = ping;
   commandsList["sticker"] = sticker;
   commandsList["del"] = del;
-
-  commandsList["ytv"] = ytd;
-
-  commandsList["technews"] = technews;
-  commandsList["technews subscribe"] = technews;
-
-  commandsList["carbon"] = carbon;
 
   commandsList["image"] = image;
   commandsList["img"] = image

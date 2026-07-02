@@ -10,19 +10,4 @@ services:
     volumes:
       # Persist the WhatsApp session files so you don't need to re-scan the QR code on every restart
       - ./auth_info_baileys:/usr/src/app/auth_info_baileys
-    depends_on:
-      - mongodb
 
-  mongodb:
-    image: mongo:6.0
-    container_name: socrates-mongodb-prod
-    restart: unless-stopped
-    ports:
-      # Binds only to localhost on the host machine for security
-      - "127.0.0.1:27017:27017"
-    volumes:
-      # Persists MongoDB database data
-      - mongodb_data:/data/db
-
-volumes:
-  mongodb_data:

@@ -13,8 +13,6 @@ graph TD
     commandsHandler -->|Resolve aliases| commandList[utils/commandList.js]
     commandsHandler -->|Routing| commands[commands/*.js]
     commands -->|Downloader & Helpers| utils[utils/*.js]
-    index.js -->|Scheduler| crons[utils/crons.js]
-    crons -->|Fetch & Send| technews[commands/technews.js]
 ```
 
 ---
@@ -41,10 +39,7 @@ Each command module in this folder handles a specific WhatsApp interaction. Most
 *   [image.js](file:///d:/coding2/BotSocrates/commands/image.js) — Converts quoted WebP stickers back into standard media (PNG for static stickers, MP4 for animated stickers) using ImageMagick (`magick` or `convert`) and `ffmpeg`.
 *   [tts.js](file:///d:/coding2/BotSocrates/commands/tts.js) — Text-to-speech engine. Invokes `gtts_script.py` to compile text to MP3 and uses `ffmpeg` to transcode it to a WhatsApp-compatible Opus OGG file.
 *   [shortener.js](file:///d:/coding2/BotSocrates/commands/shortener.js) — Shortens any provided URL using the TinyURL API.
-*   [technews.js](file:///d:/coding2/BotSocrates/commands/technews.js) — Fetches daily tech news from an external API. Contains MongoDB helper methods for managing user subscriptions to daily news broadcasts.
 *   [text_overlay.js](file:///d:/coding2/BotSocrates/commands/text_overlay.js) — Adds custom text overlay centered at the bottom of a quoted image/sticker using ImageMagick commands.
-*   [ytv.js](file:///d:/coding2/BotSocrates/commands/ytv.js) — Command wrapper that downloads YouTube shorts or videos using the `YtDownloader` utility.
-*   [carbon.js](file:///d:/coding2/BotSocrates/commands/carbon.js) — Converts text snippets of code into highly customizable images using the Carbon API.
 *   [del.js](file:///d:/coding2/BotSocrates/commands/del.js) — Deletes a previously sent message by quoting it (only allowed for authorized admin participants).
 *   [naughty.js](file:///d:/coding2/BotSocrates/commands/naughty.js) — Sends a predefined cheeky sticker from local assets.
 
@@ -56,9 +51,7 @@ Shared utilities, helper scripts, and application logic.
 
 *   [commandsHandler.js](file:///d:/coding2/BotSocrates/utils/commandsHandler.js) — The primary command router. Checks if the incoming message starts with `process.env.PREFIX`, strips the prefix, extracts parameters, and invokes the matching command function based on argument counts.
 *   [commandList.js](file:///d:/coding2/BotSocrates/utils/commandList.js) — Acts as a command registry mapping triggers and aliases (e.g. `h` -> `help`, `speak` -> `tts`) to the exported command functions.
-*   [YtDownloader.js](file:///d:/coding2/BotSocrates/utils/YtDownloader.js) — Streams YouTube video payloads under a specific duration threshold (defaults to 5 minutes) via `ytdl-core` and sends them as native WhatsApp video clips.
-*   [carbonGenerator.js](file:///d:/coding2/BotSocrates/utils/carbonGenerator.js) — Handles interaction with the `unofficial-carbon-now` package to generate images of code.
-*   [crons.js](file:///d:/coding2/BotSocrates/utils/crons.js) — Manages scheduled triggers using the `node-cron` package. Periodically runs twice daily (at 7 AM and 7 PM) to send technology news updates to valid subscribers in the MongoDB database.
+
 *   [error.js](file:///d:/coding2/BotSocrates/utils/error.js) — Formats and sends standard Internal Server Error (500) messages.
 *   [gtts_script.py](file:///d:/coding2/BotSocrates/utils/gtts_script.py) — Python script using the `gtts` library to generate MP3 speech files from text inputs.
 
@@ -80,7 +73,7 @@ To develop or run the bot successfully, the following system-level and library p
 2.  **FFmpeg**: Used for video sticker transcoding, audio conversion for text-to-speech, and video formatting. Set the path to the executable in your environment variables via `FFMPEG_PATH`.
 3.  **ImageMagick**: Required for static/animated sticker conversions and overlaying text (`commands/image.js` and `commands/text_overlay.js`). The script executes standard commands using `magick` or `convert` executable.
 4.  **Python 3**: Requires Python and the `gtts` library (`pip install gtts`) to execute the text-to-speech engine wrapper.
-5.  **MongoDB**: Used by the cron system and subscription engine in `commands/technews.js` to manage subscriber list data. Specify credentials using `MONGO_URI`.
+
 
 ---
 
@@ -93,7 +86,7 @@ Copy the [.env.example](file:///d:/coding2/BotSocrates/.env.example) file to a `
 ```bash
 cp .env.example .env
 ```
-Fill out the required variables (especially `NEWS_API`). By default, `MONGO_URI` is preset to target the internal `mongodb` service defined in the compose file.
+Fill out the required variables. By default, configuration is loaded from the environment or `.env` file.
 
 ### 2. Deploy using Docker Compose (or Portainer Stacks)
 Run the following command in the root folder:

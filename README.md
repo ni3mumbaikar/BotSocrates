@@ -34,7 +34,6 @@ BotSocrates is Just another whatsapp bot but it can do things the way I want !
 | /help        |      /h   |    *admin*                               | To display help menu containing all commands |    /h  OR /h\<space\>admin    |
 | /alive       |       -   |  -                                       | To check bot is online or not                |    /alive             |
 | /sticker     |       -   |  *default, crop, full*                   | It returns sticker of the given image/video/gif              |    /sticker or <br/> /sticker\<space\>(any of the parameter)             |
-| /ytv         |       -   |  *yotube shorts or video link\**         | Get youtube video from the given link <br/> To save my credit card running out of money the maximum video length is limited to 5 minutes |    /alive             |
 
 ### Deployment Guide
 

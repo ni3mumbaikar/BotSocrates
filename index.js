@@ -3,7 +3,6 @@ require('dotenv').config();
 const P = require("pino");
 const qrcode = require("qrcode-terminal");
 const commandsHandler = require("./utils/commandsHandler");
-const setUpCrons = require("./utils/crons").setUpCrons;
 
 const {
   default: makeWASocket,
@@ -56,11 +55,7 @@ async function connectToWhatsApp() {
     await commandsHandler.handler(sock, msg);
   });
 
-  try {
-    await setUpCrons(sock);
-  } catch (err) {
-    console.log("err :>> ", err);
-  }
+
 }
 
 /* --------------------------------- PROGRAM STARTS HERE --------------------------------- */
