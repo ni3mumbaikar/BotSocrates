@@ -31,9 +31,14 @@ BotSocrates is Just another whatsapp bot but it can do things the way I want !
 
 | Command      | Alias     | Parameters |  Use | Example |
 |--------------|-----------|------------|----------------------------------------------|----------------------|
-| /help        |      /h   |    *admin*                               | To display help menu containing all commands |    /h  OR /h\<space\>admin    |
 | /alive       |       -   |  -                                       | To check bot is online or not                |    /alive             |
-| /sticker     |       -   |  *default, crop, full*                   | It returns sticker of the given image/video/gif              |    /sticker or <br/> /sticker\<space\>(any of the parameter)             |
+| /help        |      /h   |    *admin*                               | To display help menu containing all commands |    /h  OR /h\<space\>admin    |
+| /image       |   /img    |  -                                       | Convert sticker back to GIF or Image          |    Quote sticker and send /img |
+| /jail        |       -   |  -                                       | Overlay prison bars on an image or sticker   |    Quote image/sticker or send it with /jail caption |
+| /ping        |      /p   |  -                                       | Test latency and server status                |    /ping              |
+| /shortener   |  /short   |  *URL to shorten*\*                       | Shorten any URL                              |    /short <URL>       |
+| /sticker     |       -   |  *default, crop, full*                   | Convert any image/video/gif to a sticker      |    /sticker or <br/> /sticker\<space\>(any of the parameter) |
+| /tts         |  /speak   |  *text to convert*\*                      | Convert text to speech                        |    /speak hello world |
 
 ### Deployment Guide
 

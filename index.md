@@ -41,7 +41,7 @@ Each command module in this folder handles a specific WhatsApp interaction. Most
 *   [shortener.js](file:///d:/coding2/BotSocrates/commands/shortener.js) — Shortens any provided URL using the TinyURL API.
 *   [text_overlay.js](file:///d:/coding2/BotSocrates/commands/text_overlay.js) — Adds custom text overlay centered at the bottom of a quoted image/sticker using ImageMagick commands.
 *   [del.js](file:///d:/coding2/BotSocrates/commands/del.js) — Deletes a previously sent message by quoting it (only allowed for authorized admin participants).
-*   [naughty.js](file:///d:/coding2/BotSocrates/commands/naughty.js) — Sends a predefined cheeky sticker from local assets.
+
 
 ---
 
