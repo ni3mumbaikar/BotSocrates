@@ -37,6 +37,7 @@ BotSocrates is Just another whatsapp bot but it can do things the way I want !
 | /jail        |       -   |  -                                       | Overlay prison bars on an image or sticker   |    Quote image/sticker or send it with /jail caption |
 | /ping        |      /p   |  -                                       | Test latency and server status                |    /ping              |
 | /shortener   |  /short   |  *URL to shorten*\*                       | Shorten any URL                              |    /short <URL>       |
+| /haveibeenpwned |  /hibp |  *Email to check*\*                       | Check if an email appeared in known breaches  |    /hibp test@example.com |
 | /sticker     |       -   |  *default, crop, full*                   | Convert any image/video/gif to a sticker      |    /sticker or <br/> /sticker\<space\>(any of the parameter) |
 | /tts         |  /speak   |  *text to convert*\*                      | Convert text to speech                        |    /speak hello world |
 

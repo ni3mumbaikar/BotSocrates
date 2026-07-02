@@ -17,6 +17,9 @@ var helpDescription =
   "\n\n*/shortener* : Shorten any URL 🔗\n" +
   "Parameter : _URL to shorten_\n" +
   "Alias : _short_" +
+  "\n\n*/haveibeenpwned* : Check if an email appeared in known data breaches 🔍\n" +
+  "Parameter : _Email to check_\n" +
+  "Alias : _hibp_" +
   /*
   "\n\ntextoverlay* : Add text to an image or sticker 📝🖼️\n" +
   "Parameter : _Quote an image/sticker and provide text in caption_\n" +
