@@ -40,4 +40,5 @@ ENV FFMPEG_PATH=/usr/bin/ffmpeg
 ENV PREFIX=/
 
 # Run the WhatsApp bot
+EXPOSE 3000
 CMD ["node", "index.js"]

@@ -3,6 +3,8 @@ services:
     build: .
     container_name: socrates-bot
     restart: unless-stopped
+    ports:
+      - "3000:3000"
     env_file:
       - .env
     command: ["sh", "-c", "rm -rf auth_info_baileys/* && node --watch index.js"]
