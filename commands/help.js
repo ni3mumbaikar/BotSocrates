@@ -26,7 +26,9 @@ var helpDescription =
   "Alias : _to_" +
   */
   "\n\n*/jail* : Put someone in jail by overlaying prison bars on their image/sticker 🚨\n" +
-  "Parameter : _Quote an image/sticker or send it with `/jail` caption_";
+  "Parameter : _Quote an image/sticker or send it with `/jail` caption_" +
+  "\n\n*/chatdetails* : Get the unique identifier details of the current chat ℹ️\n" +
+  "Alias : _cd_";
 
 
 module.exports.reply = async function (sock, msg) {

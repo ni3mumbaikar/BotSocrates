@@ -9,6 +9,7 @@ const shortener = require("../commands/shortener");
 const jail = require("../commands/jail");
 const ping = require("../commands/ping");
 const haveibeenpwned = require("../commands/haveibeenpwned");
+const chatdetails = require("../commands/chatdetails");
 // const text_overlay = require("../commands/text_overlay");
 
 let commandsList = {};
@@ -37,6 +38,9 @@ module.exports.commandsGenerator = function () {
 
   commandsList["haveibeenpwned"] = haveibeenpwned;
   commandsList["hibp"] = haveibeenpwned;
+
+  commandsList["chatdetails"] = chatdetails;
+  commandsList["cd"] = chatdetails;
 
   /*
   commandsList["textoverlay"] = text_overlay;

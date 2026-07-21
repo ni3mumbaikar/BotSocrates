@@ -42,7 +42,7 @@ Each command module in this folder handles a specific WhatsApp interaction. Most
 *   [haveibeenpwned.js](file:///d:/coding2/BotSocrates/commands/haveibeenpwned.js) — Checks if an email has appeared in known data breaches using the XposedOrNot breach analytics API. Supports `/haveibeenpwned` and `/hibp`.
 *   [text_overlay.js](file:///d:/coding2/BotSocrates/commands/text_overlay.js) — Adds custom text overlay centered at the bottom of a quoted image/sticker using ImageMagick commands.
 *   [del.js](file:///d:/coding2/BotSocrates/commands/del.js) — Deletes a previously sent message by quoting it (only allowed for authorized admin participants).
-
+*   [chatdetails.js](file:///d:/coding2/BotSocrates/commands/chatdetails.js) — Returns unique chat identifier (Group ID and user JID if in group, or user JID if personal chat).
 
 ---
 
