@@ -7,6 +7,36 @@ const DEFAULT_MODEL = 'openclaw';
 const MIN_MESSAGES_FOR_SUMMARY = 2;
 
 /**
+ * Normalizes and sanitizes text for WhatsApp formatting:
+ * - Replaces Markdown double asterisks (**) with WhatsApp single asterisks (*).
+ * - Fixes quotes inside asterisks so bold doesn't break into raw stars.
+ * - Ensures "Kal Ka Lafda" section header is clean and never bolded.
+ * - Ensures clean spacing between bullet points and bold tags.
+ */
+function sanitizeWhatsAppFormatting(text) {
+  if (!text) return text;
+  let clean = text;
+
+  // 1. Ensure "Kal Ka Lafda" section header is NEVER bolded (strip surrounding asterisks)
+  clean = clean.replace(/\*+(🗞️\s*Kal Ka Lafda[^*]*)\*+/gi, '$1');
+
+  // 2. Fix double asterisks around quotes: **"text"** or *"text"* -> "*text*"
+  clean = clean.replace(/\*\*"([^"]+)"\*\*/g, '"*$1*"');
+  clean = clean.replace(/\*"([^"]+)"\*/g, '"*$1*"');
+
+  // 3. Replace all remaining Markdown double asterisks **text** with single asterisk *text*
+  clean = clean.replace(/\*\*(.*?)\*\*/g, '*$1*');
+
+  // 4. Strip any leftover double asterisks
+  clean = clean.replace(/\*\*/g, '*');
+
+  // 5. Ensure clean space between bullet point and bold tag: •*text* -> • *text*
+  clean = clean.replace(/([•\-])\*([^\s*])/g, '$1 *$2');
+
+  return clean;
+}
+
+/**
  * Builds the system prompt for chat summarization.
  * Supports multilingual WhatsApp chats including English, Hinglish, and Romanized Marathi (Manglish).
  */
@@ -26,11 +56,15 @@ Bring 100% "AI Bakchodi", sarcasm, playful roasting, and witty commentary while 
 - Understand the context, jokes, teasing, and inside references perfectly.
 - Write your summary in an entertaining, witty English/Hinglish blend that feels like a natural roast among friends.
 
-📱 FORMAT RULES (Clean WhatsApp formatting with emojis and *bold*):
+📱 WHATSAPP FORMATTING RULES (STRICT):
+- WhatsApp bold uses a SINGLE asterisk (*word*). NEVER use double asterisks (**word**).
+- Ensure there is a space before the opening asterisk and after the closing asterisk (e.g. "• *Name:* said this").
+- Never place asterisks around quotes (use "*quote*" instead of *"quote"* or **"quote"**).
+- Keep "🗞️ Kal Ka Lafda & Gossip (Key Highlights):" as PLAIN TEXT without any asterisks.
 
 *🔥 Daily Bakchodi Bulletin (${dateString})*
 
-*🗞️ Kal Ka Lafda & Gossip (Key Highlights):*
+🗞️ Kal Ka Lafda & Gossip (Key Highlights):
 - Breakdown of the main topics/arguments/discussions with funny commentary and sarcasm.
 - Mention members by name and what drama or topic they brought up.
 
@@ -130,11 +164,13 @@ async function summarizeGroup(whatsappSock, groupId, baseDate = new Date()) {
       }
     );
 
-    const summaryText = response.data?.choices?.[0]?.message?.content?.trim();
+    const rawSummary = response.data?.choices?.[0]?.message?.content?.trim();
 
-    if (!summaryText) {
+    if (!rawSummary) {
       throw new Error('Received empty summary response from AI Agent API');
     }
+
+    const summaryText = sanitizeWhatsAppFormatting(rawSummary);
 
     // Send the summary strictly and isolatedly to this specific group
     if (whatsappSock) {
