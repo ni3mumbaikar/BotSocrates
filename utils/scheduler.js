@@ -2,6 +2,35 @@
  * Scheduler utility to trigger jobs at midnight (00:00 AM) every day.
  */
 
+const DEFAULT_TIMEZONE = process.env.TZ || 'Asia/Kolkata';
+
+function getTimeZoneOffsetMs(date, timeZone = DEFAULT_TIMEZONE) {
+  const utcDate = new Date(date.toLocaleString('en-US', { timeZone: 'UTC' }));
+  const tzDate = new Date(date.toLocaleString('en-US', { timeZone }));
+  return tzDate.getTime() - utcDate.getTime();
+}
+
+function getZonedDate(year, month, day, hour = 0, minute = 0, second = 0, millisecond = 0, timeZone = DEFAULT_TIMEZONE) {
+  const utcCandidate = new Date(Date.UTC(year, month - 1, day, hour, minute, second, millisecond));
+  const offset = getTimeZoneOffsetMs(utcCandidate, timeZone);
+  return new Date(utcCandidate.getTime() - offset);
+}
+
+function getTzParts(d, timeZone = DEFAULT_TIMEZONE) {
+  const f = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    year: 'numeric', month: 'numeric', day: 'numeric',
+    hour: 'numeric', minute: 'numeric', second: 'numeric',
+    hour12: false
+  });
+  const parts = Object.fromEntries(f.formatToParts(d).map(p => [p.type, p.value]));
+  return {
+    year: parseInt(parts.year),
+    month: parseInt(parts.month),
+    day: parseInt(parts.day)
+  };
+}
+
 let scheduledTimer = null;
 
 function scheduleMidnightJob(jobFunction) {
@@ -11,17 +40,11 @@ function scheduleMidnightJob(jobFunction) {
   }
 
   function getMsUntilNextMidnight() {
+    const timeZone = process.env.TZ || 'Asia/Kolkata';
     const now = new Date();
-    // Schedule for 00:00:05 (5 seconds past midnight) to ensure date has rolled over completely
-    const nextMidnight = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() + 1,
-      0,
-      0,
-      5,
-      0
-    );
+    const parts = getTzParts(now, timeZone);
+    // Target 00:00:05 in target timezone (5 seconds past midnight)
+    const nextMidnight = getZonedDate(parts.year, parts.month, parts.day + 1, 0, 0, 5, 0, timeZone);
     return nextMidnight.getTime() - now.getTime();
   }
 

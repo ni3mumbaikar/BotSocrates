@@ -38,6 +38,7 @@ RUN mkdir -p Media/Image
 ENV NODE_ENV=production
 ENV FFMPEG_PATH=/usr/bin/ffmpeg
 ENV PREFIX=/
+ENV TZ=Asia/Kolkata
 
 # Run the WhatsApp bot
 EXPOSE 3000

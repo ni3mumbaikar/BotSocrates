@@ -67,9 +67,16 @@ async function summarizeGroup(whatsappSock, groupId, baseDate = new Date()) {
     return { groupId, status: 'skipped', reason: 'insufficient_messages', messageCount: messages.length, date: dateString };
   }
 
-  // Format transcript cleanly for the LLM
+  const timeZone = process.env.TZ || 'Asia/Kolkata';
+
+  // Format transcript cleanly for the LLM with IST timestamps
   const transcript = messages.map(m => {
-    const time = new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const time = new Date(m.timestamp).toLocaleTimeString('en-IN', {
+      timeZone,
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
     const sender = m.sender_name || (m.sender_jid ? m.sender_jid.split('@')[0] : 'Member');
     return `[${time}] ${sender}: ${m.text}`;
   }).join('\n');

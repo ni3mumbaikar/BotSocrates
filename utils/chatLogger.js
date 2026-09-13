@@ -61,6 +61,35 @@ function logMessage({ groupId, senderJid, senderName, text, timestamp }) {
   insertStmt.run(groupId, senderJid || '', senderName || 'Unknown', cleanText, msgTimestamp);
 }
 
+const DEFAULT_TIMEZONE = process.env.TZ || 'Asia/Kolkata';
+
+function getTimeZoneOffsetMs(date, timeZone = DEFAULT_TIMEZONE) {
+  const utcDate = new Date(date.toLocaleString('en-US', { timeZone: 'UTC' }));
+  const tzDate = new Date(date.toLocaleString('en-US', { timeZone }));
+  return tzDate.getTime() - utcDate.getTime();
+}
+
+function getZonedDate(year, month, day, hour = 0, minute = 0, second = 0, millisecond = 0, timeZone = DEFAULT_TIMEZONE) {
+  const utcCandidate = new Date(Date.UTC(year, month - 1, day, hour, minute, second, millisecond));
+  const offset = getTimeZoneOffsetMs(utcCandidate, timeZone);
+  return new Date(utcCandidate.getTime() - offset);
+}
+
+function getTzParts(d, timeZone = DEFAULT_TIMEZONE) {
+  const f = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    year: 'numeric', month: 'numeric', day: 'numeric',
+    hour: 'numeric', minute: 'numeric', second: 'numeric',
+    hour12: false
+  });
+  const parts = Object.fromEntries(f.formatToParts(d).map(p => [p.type, p.value]));
+  return {
+    year: parseInt(parts.year),
+    month: parseInt(parts.month),
+    day: parseInt(parts.day)
+  };
+}
+
 /**
  * Returns messages for a specific group within an epoch timestamp range (inclusive).
  */
@@ -69,19 +98,34 @@ function getMessagesForDateRange(groupId, startTime, endTime) {
 }
 
 /**
- * Returns yesterday's messages for a specific group (00:00:00.000 to 23:59:59.999).
+ * Returns yesterday's messages for a specific group (00:00:00.000 to 23:59:59.999 in target timezone, default IST).
  * If targetDate is provided, it calculates for the day prior to targetDate.
  */
 function getYesterdayMessages(groupId, baseDate = new Date()) {
-  const d = new Date(baseDate);
-  // Yesterday
-  d.setDate(d.getDate() - 1);
+  const timeZone = process.env.TZ || 'Asia/Kolkata';
 
-  const startOfDay = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0).getTime();
-  const endOfDay = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999).getTime();
+  let baseParts;
+  if (typeof baseDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(baseDate.trim())) {
+    const [y, m, d] = baseDate.trim().split('-').map(Number);
+    baseParts = { year: y, month: m, day: d };
+  } else {
+    baseParts = getTzParts(new Date(baseDate), timeZone);
+  }
+
+  // Calculate yesterday in target timezone
+  const baseEpoch = getZonedDate(baseParts.year, baseParts.month, baseParts.day, 12, 0, 0, 0, timeZone);
+  const yEpoch = new Date(baseEpoch.getTime() - (24 * 60 * 60 * 1000));
+  const yParts = getTzParts(yEpoch, timeZone);
+
+  const startOfDay = getZonedDate(yParts.year, yParts.month, yParts.day, 0, 0, 0, 0, timeZone).getTime();
+  const endOfDay = getZonedDate(yParts.year, yParts.month, yParts.day, 23, 59, 59, 999, timeZone).getTime();
+
+  const monthStr = String(yParts.month).padStart(2, '0');
+  const dayStr = String(yParts.day).padStart(2, '0');
+  const dateString = `${yParts.year}-${monthStr}-${dayStr}`;
 
   return {
-    dateString: d.toISOString().split('T')[0],
+    dateString,
     startTime: startOfDay,
     endTime: endOfDay,
     messages: getMessagesForDateRange(groupId, startOfDay, endOfDay)

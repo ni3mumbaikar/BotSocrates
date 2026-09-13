@@ -7,6 +7,8 @@ services:
       - "${PORT:-3000}:${PORT:-3000}"
     env_file:
       - .env
+    environment:
+      - TZ=${TZ:-Asia/Kolkata}
     command: ["node", "--watch", "index.js"]
     volumes:
       # Mount the current directory for live local development
