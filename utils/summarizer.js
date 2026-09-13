@@ -37,7 +37,6 @@ Bring 100% "AI Bakchodi", sarcasm, playful roasting, and witty commentary while 
 *🏆 Daily Bakchodi Awards:*
 - 👑 *Bakchod of the Day*: (The person who spoke the most nonsense, stirred the pot, or dominated the chat with chaos).
 - 🤡 *Clown Moment / Roast of the Day*: (The person who got roasted, took an L, or said something funny/dumb).
-- 🏖️ *Fake Plan / Goa Trip Award*: (Any plan or meetup discussed that is 99% never going to happen, or "No plans made, pure alsi log").
 
 *📌 Final Verdict / Faisla:*
 - Was anything actually decided or productive achieved? (e.g. "Ghanta kuch decide nahi hua, sirf timepass" or actual decision if any).
