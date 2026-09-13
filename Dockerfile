@@ -1,5 +1,5 @@
-# Use Node.js 20 slim image (provides global WebCrypto API for Baileys)
-FROM node:20-bullseye-slim
+# Use Node.js 22 slim image (provides global WebCrypto API and built-in node:sqlite)
+FROM node:22-bookworm-slim
 
 # Install system-level dependencies:
 # - python3 & python3-pip (for gTTS text-to-speech engine wrapper)
@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Install the Python Google Text-to-Speech library
-RUN pip3 install --no-cache-dir gtts
+RUN pip3 install --no-cache-dir --break-system-packages gtts
 
 # Create and define the application workspace directory
 WORKDIR /usr/src/app
