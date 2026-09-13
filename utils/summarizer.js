@@ -1,9 +1,9 @@
 const axios = require('axios');
 const chatLogger = require('./chatLogger');
 
-// Default API configuration (OpenClaw / AnyAPI / OpenAI-compatible endpoint)
-const DEFAULT_API_URL = 'http://localhost:11434/v1/chat/completions';
-const DEFAULT_MODEL = 'gpt-4o-mini';
+// Default API configuration (OpenClaw / OpenAI-compatible endpoint)
+const DEFAULT_API_URL = 'http://localhost:18789/v1/chat/completions';
+const DEFAULT_MODEL = 'openclaw';
 const MIN_MESSAGES_FOR_SUMMARY = 2;
 
 /**
