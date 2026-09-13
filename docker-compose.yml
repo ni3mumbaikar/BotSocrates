@@ -7,7 +7,7 @@ services:
       - "3000:3000"
     env_file:
       - .env
-    command: ["sh", "-c", "rm -rf auth_info_baileys/* && node --watch index.js"]
+    command: ["node", "--watch", "index.js"]
     volumes:
       # Mount the current directory for live local development
       - ./:/usr/src/app
@@ -17,4 +17,10 @@ services:
       - ./auth_info_baileys:/usr/src/app/auth_info_baileys
       # Optional: Mount the assets folder if you have it locally
       # - ./assets:/usr/src/app/assets
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
 

@@ -18,7 +18,8 @@ console.log(
 /* --------------------------------- MESSAGE HANDLER METHOD --------------------------------- */
 
 module.exports.handler = function handleMessage(sock, msg) {
-  // TODO : check for whitelisted Personal only using DB
+  // Ignore messages sent by the bot itself to prevent self-triggering loops
+  if (msg?.key?.fromMe) return;
 
   // checks for in-reply messages and enforces group only policy
   if (msg.message) {
