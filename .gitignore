@@ -139,9 +139,11 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-# SQLite databases
+# SQLite databases & Chat storage
 *.db
 *.db-wal
 *.db-shm
 chats.db*
+data/
+
 
