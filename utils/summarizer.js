@@ -1,12 +1,51 @@
 const axios = require('axios');
 const chatLogger = require('./chatLogger');
 
-const DEFAULT_HERMES_URL = 'http://localhost:11434/v1/chat/completions';
-const DEFAULT_HERMES_MODEL = 'hermes3';
+// Default API configuration (OpenClaw / AnyAPI / OpenAI-compatible endpoint)
+const DEFAULT_API_URL = 'http://localhost:11434/v1/chat/completions';
+const DEFAULT_MODEL = 'gpt-4o-mini';
 const MIN_MESSAGES_FOR_SUMMARY = 2;
 
 /**
- * Summarizes chat messages for a specific group using the Hermes agent API.
+ * Builds the system prompt for chat summarization.
+ * Supports multilingual WhatsApp chats including English, Hinglish, and Romanized Marathi (Manglish).
+ */
+function getSystemPrompt(dateString) {
+  // If user provided a custom prompt in .env, use it
+  if (process.env.SUMMARY_SYSTEM_PROMPT && process.env.SUMMARY_SYSTEM_PROMPT.trim()) {
+    return process.env.SUMMARY_SYSTEM_PROMPT.replace('{dateString}', dateString);
+  }
+
+  // Built-in multilingual prompt
+  return `You are an executive WhatsApp group summarizer.
+Your goal is to produce a concise, insightful daily summary of this WhatsApp group's discussion from the previous day (${dateString}).
+
+🌐 MULTILINGUAL INSTRUCTIONS:
+- The chat may contain messages in English, Hindi written in English letters (Hinglish), Marathi written in English letters (Manglish/Romanized Marathi), or a natural mix of these (code-switching).
+- Accurately understand the slang, intent, and context of all Indian colloquialisms, Hinglish, and Marathi expressions.
+- Translate their meaning accurately into your analysis, and output the final summary in clear, professional English.
+
+📱 FORMAT RULES FOR WHATSAPP:
+- Use *bold* for headings and key highlights.
+- Keep it clean, structured, and easy to read on mobile.
+- Structure your response exactly as follows:
+
+*📅 Daily Group Summary (${dateString})*
+
+*💡 Key Discussions & Topics:*
+- Bullet points summarizing the main discussions and updates.
+
+*📌 Decisions & Conclusions:*
+- Any agreements, plans, or conclusions reached (or "None" if purely casual banter).
+
+*⚡ Action Items & Next Steps:*
+- Tasks assigned, follow-ups, or deadlines mentioned (or "None" if none).
+
+- Omit spam, hello/bye greetings, and one-word filler messages.`;
+}
+
+/**
+ * Summarizes chat messages for a specific group using the OpenClaw / AI agent API.
  * @param {Object} whatsappSock - Active Baileys WhatsApp socket connection
  * @param {string} groupId - Target WhatsApp group JID (e.g. 120363xxxx@g.us)
  * @param {Date} [baseDate] - Base date (summarizes the day prior to baseDate)
@@ -32,35 +71,30 @@ async function summarizeGroup(whatsappSock, groupId, baseDate = new Date()) {
     return `[${time}] ${sender}: ${m.text}`;
   }).join('\n');
 
-  const apiUrl = process.env.HERMES_API_URL || DEFAULT_HERMES_URL;
-  const apiKey = process.env.HERMES_API_KEY || '';
-  const modelName = process.env.HERMES_MODEL || DEFAULT_HERMES_MODEL;
+  // Support OPENCLAW, ANYAPI, AI, or HERMES environment variables
+  const apiUrl = 
+    process.env.OPENCLAW_API_URL || 
+    process.env.AI_API_URL || 
+    process.env.HERMES_API_URL || 
+    DEFAULT_API_URL;
 
-  const systemPrompt = 
-`You are an executive WhatsApp group summarizer.
-Your goal is to produce a concise, insightful daily summary of this WhatsApp group's discussion from the previous day.
+  const apiKey = 
+    process.env.OPENCLAW_API_KEY || 
+    process.env.AI_API_KEY || 
+    process.env.HERMES_API_KEY || 
+    '';
 
-Format rules for WhatsApp:
-- Use *bold* for headings and key highlights.
-- Structure clearly with bullet points:
-  *📅 Daily Group Summary (${dateString})*
-  
-  *💡 Key Discussions & Topics:*
-  - Brief bullet points of main conversations.
-  
-  *📌 Decisions & Conclusions:*
-  - Any agreements or decisions made (or "None" if purely conversational).
-  
-  *⚡ Action Items & Next Steps:*
-  - Assigned tasks or follow-ups (or "None" if none).
+  const modelName = 
+    process.env.OPENCLAW_MODEL || 
+    process.env.AI_MODEL || 
+    process.env.HERMES_MODEL || 
+    DEFAULT_MODEL;
 
-- Do not summarize simple greetings, spam, or one-word banter.
-- Keep it concise, professional, and easy to read on mobile.`;
-
+  const systemPrompt = getSystemPrompt(dateString);
   const userPrompt = `Here is the group chat transcript from yesterday (${dateString}):\n\n${transcript}\n\nPlease generate the executive daily summary.`;
 
   try {
-    console.log(`[Summarizer] Sending ${messages.length} messages from group ${groupId} to Hermes API (${apiUrl})...`);
+    console.log(`[Summarizer] Sending ${messages.length} messages from group ${groupId} to AI Agent API (${apiUrl}) using model '${modelName}'...`);
 
     const headers = {
       'Content-Type': 'application/json'
@@ -89,7 +123,7 @@ Format rules for WhatsApp:
     const summaryText = response.data?.choices?.[0]?.message?.content?.trim();
 
     if (!summaryText) {
-      throw new Error('Received empty summary response from Hermes API');
+      throw new Error('Received empty summary response from AI Agent API');
     }
 
     // Send the summary strictly and isolatedly to this specific group
@@ -165,6 +199,7 @@ async function generateDailySummaries(whatsappSock, baseDate = new Date()) {
 }
 
 module.exports = {
+  getSystemPrompt,
   summarizeGroup,
   generateDailySummaries
 };
