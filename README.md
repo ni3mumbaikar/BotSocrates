@@ -61,3 +61,8 @@ FFMPEG_PATH="/path/to/your/ffmpeg"
 
 Replace `/path/to/your/ffmpeg` with the actual absolute path to your `ffmpeg` executable. For example, on Windows, it might be `C:\ffmpeg\bin\ffmpeg.exe` or on Linux/macOS, it could be `/usr/local/bin/ffmpeg`.
 
+## Contributing
+
+We welcome contributions! Please check out [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines on setting up your local development environment with Docker Compose, adding new commands, running automated tests, and submitting pull requests.
+
+
