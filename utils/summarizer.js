@@ -4,10 +4,73 @@ const chatLogger = require('./chatLogger');
 // Default API configuration (OpenClaw / OpenAI-compatible endpoint)
 const DEFAULT_API_URL = 'http://localhost:18789/v1/chat/completions';
 const DEFAULT_MODEL = 'openclaw';
+const DEFAULT_MAX_TOKENS = 4000;
 const MIN_MESSAGES_FOR_SUMMARY = 2;
+const MAX_CONTINUATIONS = 3;
+
+/**
+ * Strips OpenClaw / upstream model output truncation warning notices.
+ * e.g. "⚠️ Reply truncated at the model's output token limit. The text above is partial — ask to continue it."
+ */
+function stripTruncationNotice(text) {
+  if (!text) return '';
+  return text
+    .replace(/\n*⚠️\s*Reply truncated at the model's output token limit\.?(\s*The text above is partial[^\n]*)?/gi, '')
+    .replace(/[^\n]*The text above is partial\s*[—–-]\s*ask to continue it\.?[^\n]*/gi, '')
+    .trim();
+}
+
+/**
+ * Checks if an LLM completion chunk was truncated by token limit.
+ */
+function isTruncated(chunk, finishReason) {
+  if (finishReason === 'length') return true;
+  if (/Reply truncated at the model's output token limit/i.test(chunk)) return true;
+  if (/The text above is partial\s*[—–-]\s*ask to continue/i.test(chunk)) return true;
+  return false;
+}
+
+/**
+ * Stitches two sequential text chunks together cleanly, detecting and removing
+ * any duplicated overlap words at the boundary.
+ */
+function stitchChunks(prev, next) {
+  if (!prev) return next || '';
+  if (!next) return prev || '';
+
+  const trimmedPrev = prev.trimEnd();
+  const trimmedNext = next.trimStart();
+
+  // Check for duplicate word overlap (between 4 and 60 chars) at boundary
+  let overlapLen = 0;
+  const maxCheck = Math.min(trimmedPrev.length, trimmedNext.length, 60);
+  for (let len = maxCheck; len >= 4; len--) {
+    const prevSuffix = trimmedPrev.slice(-len).toLowerCase();
+    const nextPrefix = trimmedNext.slice(0, len).toLowerCase();
+    if (prevSuffix === nextPrefix) {
+      overlapLen = len;
+      break;
+    }
+  }
+
+  let mergedNext = trimmedNext;
+  if (overlapLen > 0) {
+    mergedNext = trimmedNext.slice(overlapLen).trimStart();
+  }
+
+  if (!mergedNext) return trimmedPrev;
+
+  // Separate with newline if starting a list/header or ending a sentence
+  if (/^[#*\-•]/.test(mergedNext) || /[.!?:]$/.test(trimmedPrev)) {
+    return `${trimmedPrev}\n${mergedNext}`;
+  }
+
+  return `${trimmedPrev} ${mergedNext}`;
+}
 
 /**
  * Normalizes and sanitizes text for WhatsApp formatting:
+ * - Strips any residual truncation notices completely.
  * - Replaces Markdown double asterisks (**) with WhatsApp single asterisks (*).
  * - Fixes quotes inside asterisks so bold doesn't break into raw stars.
  * - Ensures "Kal Ka Lafda" section header is clean and never bolded.
@@ -16,6 +79,9 @@ const MIN_MESSAGES_FOR_SUMMARY = 2;
 function sanitizeWhatsAppFormatting(text) {
   if (!text) return text;
   let clean = text;
+
+  // 0. Remove any residual truncation notices
+  clean = stripTruncationNotice(clean);
 
   // 1. Ensure "Kal Ka Lafda" section header is NEVER bolded (strip surrounding asterisks)
   clean = clean.replace(/\*+(🗞️\s*Kal Ka Lafda[^*]*)\*+/gi, '$1');
@@ -52,7 +118,7 @@ Your job is to roast the group and provide a hilarious, entertaining daily summa
 Bring 100% "AI Bakchodi", sarcasm, playful roasting, and witty commentary while still genuinely summarizing what everyone talked about.
 
 🌐 MULTILINGUAL UNDERSTANDING:
-- The chat will have a lot of Hinglish, Marathi written in English script (Manglish), slang (e.g., scene kya hai, rada, timepass, bakwaas, ghanta, jugad, bro, etc.), and code-switching.
+- The chat will have a lot of Hinglish, Marathi written in English script (Manglish), slang (e.g., scene kya hai, rada, timepass, bakwaas, jugad, bro, etc.), and code-switching.
 - Understand the context, jokes, teasing, and inside references perfectly.
 - Write your summary in an entertaining, witty English/Hinglish blend that feels like a natural roast among friends.
 
@@ -61,6 +127,11 @@ Bring 100% "AI Bakchodi", sarcasm, playful roasting, and witty commentary while 
 - Ensure there is a space before the opening asterisk and after the closing asterisk (e.g. "• *Name:* said this").
 - Never place asterisks around quotes (use "*quote*" instead of *"quote"* or **"quote"**).
 - Keep "🗞️ Kal Ka Lafda & Gossip (Key Highlights):" as PLAIN TEXT without any asterisks.
+
+🎯 CONTENT RULES:
+- DYNAMIC VARIETY: DO NOT repeat cliché fixed sentences or robotic stock phrases. Keep every verdict, roast, and award completely original, witty, and uniquely tied to what was actually discussed.
+- ORIGINAL VERDICTS: Never use repetitive boilerplate lines. State clearly and humorously what the tangible outcome was (e.g., whether plans were finalized, bets were made, or who won the debate).
+
 
 *🔥 Daily Bakchodi Bulletin (${dateString})*
 
@@ -73,7 +144,7 @@ Bring 100% "AI Bakchodi", sarcasm, playful roasting, and witty commentary while 
 - 🤡 *Clown Moment / Roast of the Day*: (The person who got roasted, took an L, or said something funny/dumb).
 
 *📌 Final Verdict / Faisla:*
-- Was anything actually decided or productive achieved? (e.g. "Ghanta kuch decide nahi hua, sirf timepass" or actual decision if any).
+- Did anything productive actually get decided, or was it pure banter? Write a custom, creative, witty conclusion tailored specifically to today's events.
 
 *☕ AI's Parting Advice:*
 - One sharp, funny parting roast or advice for today.
@@ -83,6 +154,8 @@ Keep it punchy, funny, respectful (no hate speech), but full of spice and friend
 
 /**
  * Summarizes chat messages for a specific group using the OpenClaw / AI agent API.
+ * Handles multi-turn continuation if output token limits are reached on large chat histories.
+ *
  * @param {Object} whatsappSock - Active Baileys WhatsApp socket connection
  * @param {string} groupId - Target WhatsApp group JID (e.g. 120363xxxx@g.us)
  * @param {Date} [baseDate] - Base date (summarizes the day prior to baseDate)
@@ -134,11 +207,13 @@ async function summarizeGroup(whatsappSock, groupId, baseDate = new Date()) {
     process.env.HERMES_MODEL || 
     DEFAULT_MODEL;
 
+  const maxTokens = Number(process.env.OPENCLAW_MAX_TOKENS) || DEFAULT_MAX_TOKENS;
+
   const systemPrompt = getSystemPrompt(dateString);
   const userPrompt = `Here is the group chat transcript from yesterday (${dateString}):\n\n${transcript}\n\nPlease generate the executive daily summary.`;
 
   try {
-    console.log(`[Summarizer] Sending ${messages.length} messages from group ${groupId} to AI Agent API (${apiUrl}) using model '${modelName}'...`);
+    console.log(`[Summarizer] Sending ${messages.length} messages from group ${groupId} to AI Agent API (${apiUrl}) using model '${modelName}' (max_tokens: ${maxTokens})...`);
 
     const headers = {
       'Content-Type': 'application/json'
@@ -147,30 +222,64 @@ async function summarizeGroup(whatsappSock, groupId, baseDate = new Date()) {
       headers['Authorization'] = `Bearer ${apiKey}`;
     }
 
-    const response = await axios.post(
-      apiUrl,
-      {
-        model: modelName,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
-        ],
-        temperature: 0.3,
-        max_tokens: 1500
-      },
-      {
-        headers,
-        timeout: 120000 // 2 minutes timeout for LLM generation
+    const currentMessages = [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userPrompt }
+    ];
+
+    let fullSummary = '';
+    let continuations = 0;
+
+    while (continuations <= MAX_CONTINUATIONS) {
+      const response = await axios.post(
+        apiUrl,
+        {
+          model: modelName,
+          messages: currentMessages,
+          temperature: 0.3,
+          max_tokens: maxTokens
+        },
+        {
+          headers,
+          timeout: 120000 // 2 minutes timeout for LLM generation
+        }
+      );
+
+      const choice = response.data?.choices?.[0];
+      const rawChunk = choice?.message?.content || '';
+      const finishReason = choice?.finish_reason;
+
+      if (!rawChunk && fullSummary.length === 0) {
+        throw new Error('Received empty summary response from AI Agent API');
       }
-    );
 
-    const rawSummary = response.data?.choices?.[0]?.message?.content?.trim();
+      const cleanChunk = stripTruncationNotice(rawChunk);
+      fullSummary = stitchChunks(fullSummary, cleanChunk);
 
-    if (!rawSummary) {
-      throw new Error('Received empty summary response from AI Agent API');
+      const truncated = isTruncated(rawChunk, finishReason);
+
+      if (!truncated) {
+        // Complete output received successfully
+        break;
+      }
+
+      continuations++;
+      if (continuations > MAX_CONTINUATIONS) {
+        console.warn(`[Summarizer] Hit max continuation limit (${MAX_CONTINUATIONS}) for group ${groupId}. Finalizing summary.`);
+        break;
+      }
+
+      console.log(`[Summarizer] Response was truncated by output token limit (finish_reason: ${finishReason}). Requesting continuation (${continuations}/${MAX_CONTINUATIONS})...`);
+
+      // Add assistant response and continue instruction to maintain session context
+      currentMessages.push({ role: 'assistant', content: cleanChunk });
+      currentMessages.push({
+        role: 'user',
+        content: 'Continue generating the summary exactly from where you stopped. Do not repeat what was already written or start over. Complete the remaining sections.'
+      });
     }
 
-    const summaryText = sanitizeWhatsAppFormatting(rawSummary);
+    const summaryText = sanitizeWhatsAppFormatting(fullSummary);
 
     // Send the summary strictly and isolatedly to this specific group
     if (whatsappSock) {
@@ -185,6 +294,7 @@ async function summarizeGroup(whatsappSock, groupId, baseDate = new Date()) {
       status: 'success',
       date: dateString,
       messageCount: messages.length,
+      continuations,
       summary: summaryText
     };
   } catch (error) {
@@ -246,6 +356,10 @@ async function generateDailySummaries(whatsappSock, baseDate = new Date()) {
 
 module.exports = {
   getSystemPrompt,
+  sanitizeWhatsAppFormatting,
+  stripTruncationNotice,
+  isTruncated,
+  stitchChunks,
   summarizeGroup,
   generateDailySummaries
 };

@@ -158,6 +158,7 @@ function getStats() {
 }
 
 module.exports = {
+  db,
   logMessage,
   getMessagesForDateRange,
   getYesterdayMessages,
