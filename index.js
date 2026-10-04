@@ -4,6 +4,9 @@ const P = require("pino");
 const qrcode = require("qrcode-terminal");
 const commandsHandler = require("./utils/commandsHandler");
 const express = require("express");
+const chatLogger = require("./utils/chatLogger");
+const summarizer = require("./utils/summarizer");
+const { scheduleMidnightJob } = require("./utils/scheduler");
 
 const {
   default: makeWASocket,
@@ -119,6 +122,40 @@ async function connectToWhatsApp() {
         const msg = m.messages?.[0];
         if (!msg || !msg.message) return; // skip if no actual message (group events)
         if (msg.key?.fromMe) return; // prevent processing own messages
+
+        // Log message if it belongs to any group in SUMMARY_GROUP_IDS
+        const remoteJid = msg.key?.remoteJid || "";
+        const summaryGroupsEnv = process.env.SUMMARY_GROUP_IDS || "";
+        const summaryGroups = summaryGroupsEnv
+          .split(",")
+          .map((id) => id.trim())
+          .filter(Boolean);
+
+        if (summaryGroups.includes(remoteJid)) {
+          const text =
+            msg.message?.conversation ||
+            msg.message?.extendedTextMessage?.text ||
+            msg.message?.imageMessage?.caption ||
+            msg.message?.videoMessage?.caption ||
+            "";
+
+          if (text) {
+            const senderJid = msg.key?.participant || remoteJid;
+            const senderName = msg.pushName || "";
+            const timestamp = msg.messageTimestamp
+              ? Number(msg.messageTimestamp) * 1000
+              : Date.now();
+
+            chatLogger.logMessage({
+              groupId: remoteJid,
+              senderJid,
+              senderName,
+              text,
+              timestamp,
+            });
+          }
+        }
+
         await commandsHandler.handler(sock, msg);
       } catch (err) {
         console.error("Error processing incoming message:", err?.message || err);
@@ -211,8 +248,45 @@ app.post('/send-message', async (req, res) => {
   }
 });
 
+/* ----------------------- DAILY CHAT SUMMARY ENDPOINTS ----------------------- */
+
+app.post('/trigger-summary', async (req, res) => {
+  try {
+    const { groupId, date } = req.body || {};
+    const baseDate = date ? new Date(date) : new Date();
+
+    if (groupId) {
+      const result = await summarizer.summarizeGroup(whatsappSock, groupId, baseDate);
+      return res.status(200).json({ status: "success", result });
+    } else {
+      const results = await summarizer.generateDailySummaries(whatsappSock, baseDate);
+      return res.status(200).json({ status: "success", results });
+    }
+  } catch (error) {
+    console.error("Error triggering summary:", error);
+    return res.status(500).json({ error: "Failed to trigger summary", details: error.message });
+  }
+});
+
+app.get('/chat-stats', (req, res) => {
+  try {
+    const stats = chatLogger.getStats();
+    res.status(200).json({ status: "success", ...stats });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to get chat stats", details: error.message });
+  }
+});
+
+/* ----------------------- START EXPRESS & SCHEDULER ----------------------- */
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+});
+
+// Start recurring midnight scheduler (runs at 00:00:05 every day)
+scheduleMidnightJob(async () => {
+  console.log("[Midnight Job] Triggering automated daily chat summarization...");
+  await summarizer.generateDailySummaries(whatsappSock);
 });
 
